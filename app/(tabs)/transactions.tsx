@@ -9,6 +9,7 @@ import {
   Title,
   useTheme,
 } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Transaction } from "../../db/schema/transactions";
 import { useAccountStore } from "../../stores/accountStore";
 import { useCategoryStore } from "../../stores/categoryStore";
@@ -48,7 +49,7 @@ export default function TransactionsScreen() {
   const renderTransaction = ({ item }: { item: Transaction }) => (
     <Card
       style={styles.transactionCard}
-      onPress={() => router.push(`/transaction/details/${item.id}`)}
+      onPress={() => router.push("/transaction/add")}
     >
       <Card.Content>
         <View style={styles.transactionHeader}>
@@ -91,65 +92,67 @@ export default function TransactionsScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Title style={styles.headerTitle}>Transactions</Title>
-        <Searchbar
-          placeholder="Search transactions..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.innerContainer}>
+        <View style={styles.header}>
+          <Searchbar
+            placeholder="Search transactions..."
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+            style={styles.searchbar}
+          />
+        </View>
+
+        <FlatList
+          data={filteredTransactions}
+          renderItem={renderTransaction}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshing={loading}
+          onRefresh={loadTransactions}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Paragraph style={styles.emptyText}>
+                No transactions found. Add your first transaction!
+              </Paragraph>
+            </View>
+          }
+        />
+
+        <FAB
+          icon="plus"
+          style={styles.fab}
+          onPress={() => router.push("/transaction/add")}
         />
       </View>
-
-      <FlatList
-        data={filteredTransactions}
-        renderItem={renderTransaction}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        refreshing={loading}
-        onRefresh={loadTransactions}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Paragraph style={styles.emptyText}>
-              No transactions found. Add your first transaction!
-            </Paragraph>
-          </View>
-        }
-      />
-
-      <FAB
-        icon="plus"
-        style={styles.fab}
-        onPress={() => router.push("/transaction/add")}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  innerContainer: {
+    flex: 1,
     backgroundColor: "#f5f5f5",
   },
   header: {
     padding: 16,
+    paddingTop: 16,
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#eee",
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
   },
   searchbar: {
     elevation: 0,
     backgroundColor: "#f5f5f5",
   },
-  listContainer: {
+  scrollContent: {
     padding: 16,
+    paddingTop: 24,
   },
   transactionCard: {
     marginBottom: 12,
@@ -202,7 +205,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     textAlign: "center",
-    fontSize: 16,
     opacity: 0.6,
   },
   fab: {

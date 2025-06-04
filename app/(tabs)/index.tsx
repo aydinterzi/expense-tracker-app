@@ -1,85 +1,89 @@
 import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import { Card, FAB, Paragraph, Title, useTheme } from "react-native-paper";
+import { Button, Card, Paragraph, Title, useTheme } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useAccountStore } from "../../stores/accountStore";
 import { useCategoryStore } from "../../stores/categoryStore";
 import { useTransactionStore } from "../../stores/transactionStore";
 
 export default function DashboardScreen() {
   const theme = useTheme();
-  const { accounts, loadAccounts, getTotalBalance } = useAccountStore();
-  const { loadCategories } = useCategoryStore();
   const { transactions, loadTransactions } = useTransactionStore();
-
-  const [totalBalance, setTotalBalance] = React.useState(0);
+  const { accounts, loadAccounts } = useAccountStore();
+  const { categories, loadCategories } = useCategoryStore();
 
   useEffect(() => {
-    // Load initial data
+    loadTransactions();
     loadAccounts();
     loadCategories();
-    loadTransactions();
   }, []);
 
-  useEffect(() => {
-    // Update total balance when accounts change
-    const updateBalance = async () => {
-      const balance = await getTotalBalance();
-      setTotalBalance(balance);
-    };
-    updateBalance();
-  }, [accounts]);
+  const totalBalance = accounts.reduce(
+    (sum, account) => sum + (account.currentBalance || 0),
+    0
+  );
 
   const recentTransactions = transactions.slice(0, 5);
 
+  const getCategoryName = (categoryId: number) => {
+    const category = categories.find((c) => c.id === categoryId);
+    return category?.name || "Unknown";
+  };
+
+  const getAccountName = (accountId: number) => {
+    const account = accounts.find((a) => a.id === accountId);
+    return account?.name || "Unknown";
+  };
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+        style={[
+          styles.scrollContainer,
+          { backgroundColor: theme.colors.background },
+        ]}
+        contentContainerStyle={styles.scrollContent}
       >
-        {/* Quick Stats */}
-        <View style={styles.statsContainer}>
-          <Card style={styles.statCard}>
-            <Card.Content>
+        {/* Stats Cards */}
+        <View style={styles.statsRow}>
+          <Card style={[styles.statCard, styles.balanceCard]}>
+            <Card.Content style={styles.statCardContent}>
               <Title
-                style={[styles.statTitle, { color: theme.colors.primary }]}
+                style={[styles.statValue, { color: theme.colors.primary }]}
               >
                 ${totalBalance.toFixed(2)}
               </Title>
-              <Paragraph>Total Balance</Paragraph>
+              <Paragraph style={styles.statLabel}>Total Balance</Paragraph>
             </Card.Content>
           </Card>
 
-          <Card style={styles.statCard}>
-            <Card.Content>
+          <Card style={[styles.statCard, styles.accountsCard]}>
+            <Card.Content style={styles.statCardContent}>
               <Title
-                style={[styles.statTitle, { color: theme.colors.secondary }]}
+                style={[styles.statValue, { color: theme.colors.secondary }]}
               >
                 {accounts.length}
               </Title>
-              <Paragraph>Accounts</Paragraph>
+              <Paragraph style={styles.statLabel}>Accounts</Paragraph>
             </Card.Content>
           </Card>
         </View>
 
         {/* Recent Transactions */}
-        <Card style={styles.sectionCard}>
+        <Card style={styles.recentCard}>
           <Card.Content>
-            <Title>Recent Transactions</Title>
-            {recentTransactions.length === 0 ? (
-              <Paragraph style={styles.emptyText}>
-                No transactions yet. Add your first transaction!
-              </Paragraph>
-            ) : (
+            <Title style={styles.sectionTitle}>Recent Transactions</Title>
+            {recentTransactions.length > 0 ? (
               recentTransactions.map((transaction) => (
                 <View key={transaction.id} style={styles.transactionItem}>
                   <View style={styles.transactionInfo}>
                     <Paragraph style={styles.transactionDescription}>
                       {transaction.description || "No description"}
                     </Paragraph>
-                    <Paragraph style={styles.transactionDate}>
-                      {new Date(transaction.date).toLocaleDateString()}
+                    <Paragraph style={styles.transactionMeta}>
+                      {getCategoryName(transaction.categoryId)} •{" "}
+                      {getAccountName(transaction.accountId)}
                     </Paragraph>
                   </View>
                   <Paragraph
@@ -98,76 +102,97 @@ export default function DashboardScreen() {
                   </Paragraph>
                 </View>
               ))
+            ) : (
+              <Paragraph style={styles.emptyText}>
+                No transactions yet. Add your first transaction!
+              </Paragraph>
             )}
           </Card.Content>
         </Card>
 
         {/* Quick Actions */}
-        <Card style={styles.sectionCard}>
+        <Card style={styles.actionsCard}>
           <Card.Content>
-            <Title>Quick Actions</Title>
-            <View style={styles.quickActions}>
-              <Card
-                style={styles.actionCard}
+            <Title style={styles.sectionTitle}>Quick Actions</Title>
+            <View style={styles.actionsRow}>
+              <Button
+                mode="contained"
                 onPress={() => router.push("/transaction/add")}
+                style={[styles.actionButton, styles.expenseButton]}
+                contentStyle={styles.actionButtonContent}
               >
-                <Card.Content style={styles.actionContent}>
-                  <Paragraph>Add Expense</Paragraph>
-                </Card.Content>
-              </Card>
-
-              <Card
-                style={styles.actionCard}
+                Add Expense
+              </Button>
+              <Button
+                mode="contained"
                 onPress={() => router.push("/transaction/add")}
+                style={[styles.actionButton, styles.incomeButton]}
+                contentStyle={styles.actionButtonContent}
               >
-                <Card.Content style={styles.actionContent}>
-                  <Paragraph>Add Income</Paragraph>
-                </Card.Content>
-              </Card>
+                Add Income
+              </Button>
             </View>
           </Card.Content>
         </Card>
       </ScrollView>
-
-      {/* Floating Action Button */}
-      <FAB
-        icon="plus"
-        style={styles.fab}
-        onPress={() => router.push("/transaction/add")}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
   },
-  scrollView: {
+  scrollContainer: {
     flex: 1,
-    padding: 16,
   },
-  statsContainer: {
+  scrollContent: {
+    padding: 16,
+    paddingTop: 24,
+  },
+  statsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    gap: 12,
     marginBottom: 16,
   },
   statCard: {
     flex: 1,
-    marginHorizontal: 4,
+    elevation: 2,
   },
-  statTitle: {
+  balanceCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: "#6200ea",
+  },
+  accountsCard: {
+    borderLeftWidth: 4,
+    borderLeftColor: "#03dac6",
+  },
+  statCardContent: {
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  statValue: {
     fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 4,
   },
-  sectionCard: {
+  statLabel: {
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  recentCard: {
     marginBottom: 16,
+    elevation: 2,
   },
-  emptyText: {
-    textAlign: "center",
-    fontStyle: "italic",
-    marginTop: 16,
+  actionsCard: {
+    marginBottom: 16,
+    elevation: 2,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 16,
   },
   transactionItem: {
     flexDirection: "row",
@@ -175,39 +200,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    borderBottomColor: "#f0f0f0",
   },
   transactionInfo: {
     flex: 1,
   },
   transactionDescription: {
+    fontSize: 14,
     fontWeight: "500",
+    marginBottom: 2,
   },
-  transactionDate: {
+  transactionMeta: {
     fontSize: 12,
-    opacity: 0.7,
+    opacity: 0.6,
   },
   transactionAmount: {
-    fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
+    fontWeight: "600",
   },
-  quickActions: {
+  emptyText: {
+    textAlign: "center",
+    fontStyle: "italic",
+    opacity: 0.6,
+    paddingVertical: 20,
+  },
+  actionsRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 16,
+    gap: 12,
   },
-  actionCard: {
+  actionButton: {
     flex: 1,
-    marginHorizontal: 4,
+    borderRadius: 8,
   },
-  actionContent: {
-    alignItems: "center",
+  expenseButton: {
+    backgroundColor: "#f44336",
+  },
+  incomeButton: {
+    backgroundColor: "#4caf50",
+  },
+  actionButtonContent: {
     paddingVertical: 8,
-  },
-  fab: {
-    position: "absolute",
-    margin: 16,
-    right: 0,
-    bottom: 0,
   },
 });

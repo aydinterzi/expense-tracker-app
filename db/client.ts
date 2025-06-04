@@ -5,3 +5,6 @@ import * as schema from "./schema";
 const expo = openDatabaseSync("expense_tracker.db");
 
 export const db = drizzle(expo, { schema });
+
+// Export the raw database for running custom SQL
+export const rawDb = expo;

@@ -1,5 +1,4 @@
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
 import React, { useEffect } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {
@@ -10,6 +9,7 @@ import {
   Title,
   useTheme,
 } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Account } from "../../db/schema/accounts";
 import { useAccountStore } from "../../stores/accountStore";
 
@@ -64,7 +64,7 @@ export default function AccountsScreen() {
   const renderAccount = ({ item }: { item: Account }) => (
     <Card
       style={styles.accountCard}
-      onPress={() => router.push(`/account/details/${item.id}`)}
+      onPress={() => console.log("Navigate to account details:", item.id)}
     >
       <Card.Content>
         <View style={styles.accountHeader}>
@@ -134,91 +134,80 @@ export default function AccountsScreen() {
     </Card>
   );
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Title style={styles.headerTitle}>Accounts</Title>
-        <Card style={styles.totalBalanceCard}>
-          <Card.Content style={styles.totalBalanceContent}>
-            <Paragraph style={styles.totalBalanceLabel}>
-              Total Balance
-            </Paragraph>
-            <Title
-              style={[
-                styles.totalBalance,
-                {
-                  color:
-                    totalBalance >= 0
-                      ? theme.colors.primary
-                      : theme.colors.error,
-                },
-              ]}
-            >
-              ${totalBalance.toFixed(2)}
-            </Title>
-          </Card.Content>
-        </Card>
-      </View>
-
-      <FlatList
-        data={accounts}
-        renderItem={renderAccount}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        refreshing={loading}
-        onRefresh={loadAccounts}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <Paragraph style={styles.emptyText}>
-              No accounts found. Add your first account!
-            </Paragraph>
-          </View>
-        }
-      />
-
-      <FAB
-        icon="plus"
-        style={styles.fab}
-        onPress={() => router.push("/account/add")}
-      />
+  const ListHeaderComponent = () => (
+    <View style={styles.header}>
+      <Card style={styles.totalBalanceCard}>
+        <Card.Content style={styles.totalBalanceContent}>
+          <Paragraph style={styles.totalBalanceLabel}>Total Balance</Paragraph>
+          <Title
+            style={[
+              styles.totalBalance,
+              {
+                color:
+                  totalBalance >= 0 ? theme.colors.primary : theme.colors.error,
+              },
+            ]}
+          >
+            ${totalBalance.toFixed(2)}
+          </Title>
+        </Card.Content>
+      </Card>
     </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container} edges={["top"]}>
+      <View style={styles.innerContainer}>
+        <FlatList
+          data={accounts}
+          renderItem={renderAccount}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          refreshing={loading}
+          onRefresh={loadAccounts}
+          ListHeaderComponent={ListHeaderComponent}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Paragraph style={styles.emptyText}>
+                No accounts found. Add your first account!
+              </Paragraph>
+            </View>
+          }
+        />
+
+        <FAB
+          icon="plus"
+          style={styles.fab}
+          onPress={() => console.log("Navigate to add account")}
+        />
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: "#fff",
+  },
+  innerContainer: {
+    flex: 1,
     backgroundColor: "#f5f5f5",
   },
   header: {
     padding: 16,
+    paddingTop: 24,
     backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+  },
+  listContainer: {
+    padding: 16,
+    paddingTop: 0,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-  },
-  totalBalanceCard: {
-    backgroundColor: "#f8f9fa",
-  },
-  totalBalanceContent: {
-    alignItems: "center",
-    paddingVertical: 8,
-  },
-  totalBalanceLabel: {
-    fontSize: 14,
-    opacity: 0.7,
-  },
-  totalBalance: {
-    fontSize: 28,
-    fontWeight: "bold",
-  },
-  listContainer: {
-    padding: 16,
   },
   accountCard: {
     marginBottom: 12,
@@ -290,5 +279,20 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+  },
+  totalBalanceCard: {
+    backgroundColor: "#f8f9fa",
+  },
+  totalBalanceContent: {
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  totalBalanceLabel: {
+    fontSize: 14,
+    opacity: 0.7,
+  },
+  totalBalance: {
+    fontSize: 28,
+    fontWeight: "bold",
   },
 });

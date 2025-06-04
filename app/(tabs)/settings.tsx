@@ -1,66 +1,102 @@
-import { router } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { Card, Divider, List, Paragraph, Title } from "react-native-paper";
+import { ScrollView, StyleSheet } from "react-native";
+import { Card, Divider, List, Title, useTheme } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SettingsScreen() {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <ScrollView
-        style={styles.scrollView}
-        showsVerticalScrollIndicator={false}
+        style={[
+          styles.scrollView,
+          { backgroundColor: theme.colors.background },
+        ]}
+        contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.header}>
-          <Title style={styles.headerTitle}>Settings</Title>
-        </View>
+        <Card style={styles.sectionCard}>
+          <Card.Content>
+            <Card.Title style={styles.sectionTitle} title={"General"} />
+            <List.Item
+              title="Currency"
+              description="USD ($)"
+              left={(props) => <List.Icon {...props} icon="currency-usd" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
+            />
+            <Divider />
+            <List.Item
+              title="Date Format"
+              description="MM/DD/YYYY"
+              left={(props) => <List.Icon {...props} icon="calendar" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
+            />
+            <Divider />
+            <List.Item
+              title="First Day of Week"
+              description="Sunday"
+              left={(props) => <List.Icon {...props} icon="calendar-week" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
+            />
+          </Card.Content>
+        </Card>
 
         <Card style={styles.sectionCard}>
           <Card.Content>
-            <Title style={styles.sectionTitle}>Account Management</Title>
+            <Title style={styles.sectionTitle}>Categories & Accounts</Title>
             <List.Item
               title="Manage Categories"
-              description="Add, edit, or delete expense and income categories"
+              description="Add, edit, or delete categories"
               left={(props) => <List.Icon {...props} icon="tag" />}
-              onPress={() => router.push("/categories")}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
             />
             <Divider />
             <List.Item
               title="Manage Accounts"
-              description="Add, edit, or delete your financial accounts"
-              left={(props) => <List.Icon {...props} icon="wallet" />}
-              onPress={() => router.push("/accounts")}
+              description="Add, edit, or delete accounts"
+              left={(props) => <List.Icon {...props} icon="bank" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
             />
           </Card.Content>
         </Card>
 
         <Card style={styles.sectionCard}>
           <Card.Content>
-            <Title style={styles.sectionTitle}>Data Management</Title>
+            <Title style={styles.sectionTitle}>Data & Privacy</Title>
             <List.Item
               title="Export Data"
-              description="Export your transactions and data"
+              description="Export your data to CSV"
               left={(props) => <List.Icon {...props} icon="download" />}
-              onPress={() => {
-                // TODO: Implement data export
-                console.log("Export data");
-              }}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
             />
             <Divider />
             <List.Item
               title="Import Data"
-              description="Import transactions from CSV or other formats"
+              description="Import data from CSV"
               left={(props) => <List.Icon {...props} icon="upload" />}
-              onPress={() => {
-                // TODO: Implement data import
-                console.log("Import data");
-              }}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
+            />
+            <Divider />
+            <List.Item
+              title="Clear All Data"
+              description="Delete all transactions and accounts"
+              left={(props) => <List.Icon {...props} icon="delete" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
             />
           </Card.Content>
         </Card>
 
         <Card style={styles.sectionCard}>
           <Card.Content>
-            <Title style={styles.sectionTitle}>App Information</Title>
+            <Title style={styles.sectionTitle}>About</Title>
             <List.Item
               title="Version"
               description="1.0.0"
@@ -68,56 +104,49 @@ export default function SettingsScreen() {
             />
             <Divider />
             <List.Item
-              title="About"
-              description="Expense Tracker - Personal Finance Management"
-              left={(props) => <List.Icon {...props} icon="help-circle" />}
+              title="Privacy Policy"
+              left={(props) => <List.Icon {...props} icon="shield-check" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
+            />
+            <Divider />
+            <List.Item
+              title="Terms of Service"
+              left={(props) => <List.Icon {...props} icon="file-document" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={() => {}}
             />
           </Card.Content>
         </Card>
-
-        <Card style={styles.sectionCard}>
-          <Card.Content>
-            <Title style={styles.sectionTitle}>Quick Stats</Title>
-            <Paragraph style={styles.statsText}>
-              This is a local-first expense tracking app built with Expo and
-              React Native. All your data is stored securely on your device.
-            </Paragraph>
-          </Card.Content>
-        </Card>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#fff",
   },
   scrollView: {
     flex: 1,
   },
-  header: {
+  scrollContent: {
     padding: 16,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    paddingTop: 24,
   },
   headerTitle: {
     fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 20,
   },
   sectionCard: {
-    margin: 16,
-    marginBottom: 0,
+    marginBottom: 16,
+    elevation: 2,
   },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 8,
-  },
-  statsText: {
-    lineHeight: 20,
-    opacity: 0.8,
   },
 });
