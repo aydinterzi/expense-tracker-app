@@ -23,6 +23,10 @@ export default function RootLayout() {
   });
   const [databaseReady, setDatabaseReady] = useState(false);
 
+  // Initialize budget monitoring and notifications
+  const { initializeMonitoring } =
+    require("../hooks/useBudgetMonitoring").useBudgetMonitoring();
+
   useEffect(() => {
     // Initialize database with migrations and seed data
     const initializeDatabase = async () => {
@@ -38,6 +42,15 @@ export default function RootLayout() {
         console.log("✅ Seed data completed");
 
         console.log("🎉 Database initialization complete!");
+
+        // Initialize budget monitoring after database is ready
+        try {
+          await initializeMonitoring();
+          console.log("📱 Budget monitoring initialized");
+        } catch (error) {
+          console.error("❌ Failed to initialize budget monitoring:", error);
+        }
+
         setDatabaseReady(true);
       } catch (error) {
         console.error("❌ Failed to initialize database:", error);

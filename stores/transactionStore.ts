@@ -78,6 +78,16 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         transactions: [newTransaction, ...state.transactions],
         loading: false,
       }));
+
+      // Trigger budget monitoring after adding transaction
+      try {
+        const { triggerBudgetCheck } = await import(
+          "../hooks/useBudgetMonitoring"
+        );
+        await triggerBudgetCheck();
+      } catch (error) {
+        console.error("Failed to trigger budget check:", error);
+      }
     } catch (error) {
       set({
         error:

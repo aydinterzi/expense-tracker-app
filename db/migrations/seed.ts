@@ -112,6 +112,9 @@ const updateCategoryIcons = async () => {
     { name: "Entertainment", icon: "videocam" },
     { name: "Healthcare", icon: "medical" },
     { name: "Other", icon: "ellipsis-horizontal" },
+    { name: "Salary", icon: "cash" },
+    { name: "Bonus", icon: "trophy" },
+    { name: "Other Income", icon: "add-circle" },
   ];
 
   for (const update of iconUpdates) {
@@ -228,7 +231,7 @@ export const seedData = async () => {
     const incomeCategories = [
       {
         name: "Salary",
-        icon: "dollar-sign",
+        icon: "cash",
         color: "#4CAF50",
         type: "income" as const,
         isDefault: true,
@@ -256,14 +259,14 @@ export const seedData = async () => {
       },
       {
         name: "Bonus",
-        icon: "award",
+        icon: "trophy",
         color: "#FF9800",
         type: "income" as const,
         isDefault: true,
       },
       {
         name: "Other Income",
-        icon: "plus-circle",
+        icon: "add-circle",
         color: "#795548",
         type: "income" as const,
         isDefault: true,
@@ -283,7 +286,7 @@ export const seedData = async () => {
         initialBalance: 0,
         currentBalance: 0,
         currency: "USD",
-        icon: "dollar-sign",
+        icon: "cash",
         color: "#4CAF50",
         isActive: true,
       },

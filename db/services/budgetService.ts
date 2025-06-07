@@ -273,7 +273,7 @@ export const getBudgetDateRange = (budget: Budget) => {
   };
 };
 
-// Check and create budget alerts
+// Check and create budget alerts with notifications
 export const checkBudgetAlerts = async (): Promise<BudgetAlert[]> => {
   const activeBudgets = await getActiveBudgets();
   const newAlerts: BudgetAlert[] = [];
@@ -305,6 +305,35 @@ export const checkBudgetAlerts = async (): Promise<BudgetAlert[]> => {
       });
 
       newAlerts.push(alert);
+
+      // Send push notification
+      try {
+        // Dynamic import to avoid circular dependency
+        const { notificationService } = await import(
+          "../../services/notificationService"
+        );
+
+        const notificationData = {
+          budgetId: budget.id,
+          budgetName: budget.name,
+          percentage,
+          amount: budget.progress.spent,
+          budgetAmount: budget.amount,
+          alertType,
+        };
+
+        if (alertType === "exceeded") {
+          await notificationService.sendBudgetExceededNotification(
+            notificationData
+          );
+        } else {
+          await notificationService.sendBudgetWarningNotification(
+            notificationData
+          );
+        }
+      } catch (error) {
+        console.error("Failed to send budget notification:", error);
+      }
 
       // Mark budget as alert triggered
       await db
