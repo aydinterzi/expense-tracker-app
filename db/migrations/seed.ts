@@ -48,6 +48,60 @@ CREATE TABLE IF NOT EXISTS transactions (
   FOREIGN KEY (account_id) REFERENCES accounts(id),
   FOREIGN KEY (category_id) REFERENCES categories(id)
 );
+
+CREATE TABLE IF NOT EXISTS budgets (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  category_id INTEGER,
+  account_id INTEGER,
+  amount REAL NOT NULL,
+  period TEXT NOT NULL,
+  start_date TEXT NOT NULL,
+  end_date TEXT,
+  spent_amount REAL DEFAULT 0,
+  alert_percentage INTEGER DEFAULT 80,
+  alert_triggered INTEGER DEFAULT 0,
+  is_active INTEGER DEFAULT 1,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (category_id) REFERENCES categories(id),
+  FOREIGN KEY (account_id) REFERENCES accounts(id)
+);
+
+CREATE TABLE IF NOT EXISTS budget_alerts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  budget_id INTEGER NOT NULL,
+  alert_type TEXT NOT NULL,
+  message TEXT NOT NULL,
+  percentage REAL NOT NULL,
+  amount REAL NOT NULL,
+  is_read INTEGER DEFAULT 0,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (budget_id) REFERENCES budgets(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS budget_progress (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  budget_id INTEGER NOT NULL,
+  date TEXT NOT NULL,
+  spent_amount REAL NOT NULL,
+  percentage REAL NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (budget_id) REFERENCES budgets(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS budgets_category_id_idx ON budgets(category_id);
+CREATE INDEX IF NOT EXISTS budgets_account_id_idx ON budgets(account_id);
+CREATE INDEX IF NOT EXISTS budgets_period_idx ON budgets(period);
+CREATE INDEX IF NOT EXISTS budgets_is_active_idx ON budgets(is_active);
+CREATE INDEX IF NOT EXISTS budgets_start_date_idx ON budgets(start_date);
+
+CREATE INDEX IF NOT EXISTS budget_alerts_budget_id_idx ON budget_alerts(budget_id);
+CREATE INDEX IF NOT EXISTS budget_alerts_is_read_idx ON budget_alerts(is_read);
+CREATE INDEX IF NOT EXISTS budget_alerts_alert_type_idx ON budget_alerts(alert_type);
+
+CREATE INDEX IF NOT EXISTS budget_progress_budget_id_idx ON budget_progress(budget_id);
+CREATE INDEX IF NOT EXISTS budget_progress_date_idx ON budget_progress(date);
 `;
 
 const updateCategoryIcons = async () => {

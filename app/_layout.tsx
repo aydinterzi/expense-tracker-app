@@ -6,10 +6,11 @@ import {
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
+import { runMigrations } from "../db/client";
 import { seedData } from "../db/migrations/seed";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -20,15 +21,29 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
+  const [databaseReady, setDatabaseReady] = useState(false);
 
   useEffect(() => {
-    // Initialize database with seed data
+    // Initialize database with migrations and seed data
     const initializeDatabase = async () => {
       try {
+        console.log("🚀 Starting database initialization...");
+
+        // First run migrations to create all tables
+        await runMigrations();
+        console.log("✅ Migrations completed");
+
+        // Then seed with initial data
         await seedData();
-        console.log("Database initialized successfully");
+        console.log("✅ Seed data completed");
+
+        console.log("🎉 Database initialization complete!");
+        setDatabaseReady(true);
       } catch (error) {
-        console.error("Failed to initialize database:", error);
+        console.error("❌ Failed to initialize database:", error);
+        // Even if there's an error, we should allow the app to continue
+        // to avoid blocking the user completely
+        setDatabaseReady(true);
       }
     };
 
@@ -36,12 +51,13 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && databaseReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, databaseReady]);
 
-  if (!loaded) {
+  // Don't render the app until both fonts and database are ready
+  if (!loaded || !databaseReady) {
     return null;
   }
 
