@@ -269,11 +269,13 @@ export default function BudgetDetailsScreen() {
                 </View>
 
                 <View style={styles.progressContainer}>
-                  <ProgressBar
-                    progress={Math.min(budget.progress.percentage / 100, 1)}
-                    color={getStatusColor(budget.progress.status)}
-                    style={styles.progressBar}
-                  />
+                  <View style={styles.progressBarContainer}>
+                    <ProgressBar
+                      progress={Math.min(budget.progress.percentage / 100, 1)}
+                      color={getStatusColor(budget.progress.status)}
+                      style={styles.progressBar}
+                    />
+                  </View>
                   <Text
                     style={[
                       styles.percentageText,
@@ -596,11 +598,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  progressBar: {
+  progressBarContainer: {
     flex: 1,
+    marginRight: 16,
+    overflow: "hidden",
+  },
+  progressBar: {
     height: 12,
     borderRadius: 6,
-    marginRight: 16,
   },
   percentageText: {
     fontSize: 16,

@@ -245,13 +245,13 @@ export default function BudgetsScreen() {
                 <View
                   style={[
                     styles.statusItem,
-                    { backgroundColor: theme.colors.primary + "20" },
+                    { backgroundColor: theme.colors.primary },
                   ]}
                 >
                   <Text
                     style={[
                       styles.statusCount,
-                      { color: theme.colors.primary },
+                      { color: theme.colors.onPrimary },
                     ]}
                   >
                     {summary.budgetsOnTrack}
@@ -259,38 +259,41 @@ export default function BudgetsScreen() {
                   <Text
                     style={[
                       styles.statusLabel,
-                      { color: theme.colors.primary },
+                      { color: theme.colors.onPrimary },
                     ]}
                   >
                     On Track
                   </Text>
                 </View>
                 <View
-                  style={[
-                    styles.statusItem,
-                    { backgroundColor: "#ff9500" + "20" },
-                  ]}
+                  style={[styles.statusItem, { backgroundColor: "#ff9500" }]}
                 >
-                  <Text style={[styles.statusCount, { color: "#ff9500" }]}>
+                  <Text style={[styles.statusCount, { color: "#ffffff" }]}>
                     {summary.budgetsInWarning}
                   </Text>
-                  <Text style={[styles.statusLabel, { color: "#ff9500" }]}>
+                  <Text style={[styles.statusLabel, { color: "#ffffff" }]}>
                     Warning
                   </Text>
                 </View>
                 <View
                   style={[
                     styles.statusItem,
-                    { backgroundColor: theme.colors.error + "20" },
+                    { backgroundColor: theme.colors.error },
                   ]}
                 >
                   <Text
-                    style={[styles.statusCount, { color: theme.colors.error }]}
+                    style={[
+                      styles.statusCount,
+                      { color: theme.colors.onError },
+                    ]}
                   >
                     {summary.budgetsExceeded}
                   </Text>
                   <Text
-                    style={[styles.statusLabel, { color: theme.colors.error }]}
+                    style={[
+                      styles.statusLabel,
+                      { color: theme.colors.onError },
+                    ]}
                   >
                     Exceeded
                   </Text>
@@ -410,9 +413,8 @@ export default function BudgetsScreen() {
         {/* Floating Action Button */}
         <FAB
           icon="plus"
-          style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+          style={[styles.fab, { backgroundColor: theme.colors.secondary }]}
           onPress={() => router.push("/budget/add")}
-          label="Add Budget"
         />
 
         {/* Snackbar */}

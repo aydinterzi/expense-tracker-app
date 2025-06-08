@@ -1,10 +1,11 @@
 import { router } from "expo-router";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
   Card,
   Chip,
+  FAB,
   Paragraph,
   ProgressBar,
   Text,
@@ -19,6 +20,7 @@ import { useTransactionStore } from "../../stores/transactionStore";
 
 export default function DashboardScreen() {
   const theme = useTheme();
+  const [fabOpen, setFabOpen] = useState(false);
   const { transactions, loadTransactions } = useTransactionStore();
   const { accounts, loadAccounts } = useAccountStore();
   const { categories, loadCategories } = useCategoryStore();
@@ -440,50 +442,44 @@ export default function DashboardScreen() {
             )}
           </Card.Content>
         </Card>
-
-        {/* Quick Actions */}
-        <Card style={styles.actionsCard}>
-          <Card.Content>
-            <Title style={styles.sectionTitle}>Quick Actions</Title>
-            <View style={styles.actionsRow}>
-              <Button
-                mode="contained"
-                onPress={() => router.push("/transaction/add")}
-                style={[styles.actionButton, styles.expenseButton]}
-                contentStyle={styles.actionButtonContent}
-              >
-                Add Expense
-              </Button>
-              <Button
-                mode="contained"
-                onPress={() => router.push("/transaction/add")}
-                style={[styles.actionButton, styles.incomeButton]}
-                contentStyle={styles.actionButtonContent}
-              >
-                Add Income
-              </Button>
-            </View>
-            <View style={styles.actionsRow}>
-              <Button
-                mode="outlined"
-                onPress={() => router.push("/budget/add")}
-                style={[styles.actionButton, styles.budgetButton]}
-                contentStyle={styles.actionButtonContent}
-              >
-                Create Budget
-              </Button>
-              <Button
-                mode="outlined"
-                onPress={() => router.push("/(tabs)/analytics")}
-                style={[styles.actionButton, styles.analyticsButton]}
-                contentStyle={styles.actionButtonContent}
-              >
-                View Analytics
-              </Button>
-            </View>
-          </Card.Content>
-        </Card>
       </ScrollView>
+
+      {/* Floating Action Menu */}
+      <FAB.Group
+        open={fabOpen}
+        visible
+        icon={fabOpen ? "close" : "plus"}
+        actions={[
+          {
+            icon: "chart-line",
+            label: "Analytics",
+            onPress: () => router.push("/(tabs)/analytics"),
+          },
+          {
+            icon: "budget",
+            label: "Create Budget",
+            onPress: () => router.push("/budget/add"),
+          },
+          {
+            icon: "plus",
+            label: "Add Income",
+            onPress: () => router.push("/transaction/add"),
+            color: "#4CAF50",
+          },
+          {
+            icon: "minus",
+            label: "Add Expense",
+            onPress: () => router.push("/transaction/add"),
+            color: "#f44336",
+          },
+        ]}
+        onStateChange={({ open }) => setFabOpen(open)}
+        onPress={() => {
+          if (fabOpen) {
+            // do something if the speed dial is open
+          }
+        }}
+      />
     </SafeAreaView>
   );
 }

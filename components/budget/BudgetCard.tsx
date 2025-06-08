@@ -131,11 +131,13 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             </View>
 
             <View style={styles.progressContainer}>
-              <ProgressBar
-                progress={Math.min(budget.progress.percentage / 100, 1)}
-                color={getStatusColor()}
-                style={styles.progressBar}
-              />
+              <View style={styles.progressBarContainer}>
+                <ProgressBar
+                  progress={Math.min(budget.progress.percentage / 100, 1)}
+                  color={getStatusColor()}
+                  style={styles.progressBar}
+                />
+              </View>
               <Text
                 style={[styles.percentageText, { color: getStatusColor() }]}
               >
@@ -236,11 +238,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4,
   },
-  progressBar: {
+  progressBarContainer: {
     flex: 1,
+    marginRight: 12,
+    overflow: "hidden",
+  },
+  progressBar: {
     height: 8,
     borderRadius: 4,
-    marginRight: 12,
   },
   percentageText: {
     fontSize: 14,
