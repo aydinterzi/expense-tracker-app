@@ -136,22 +136,28 @@ export default function AccountsScreen() {
 
   const ListHeaderComponent = () => (
     <View style={styles.header}>
-      <Card style={styles.totalBalanceCard}>
-        <Card.Content style={styles.totalBalanceContent}>
-          <Paragraph style={styles.totalBalanceLabel}>Total Balance</Paragraph>
-          <Title
-            style={[
-              styles.totalBalance,
-              {
-                color:
-                  totalBalance >= 0 ? theme.colors.primary : theme.colors.error,
-              },
-            ]}
-          >
-            ${totalBalance.toFixed(2)}
-          </Title>
-        </Card.Content>
-      </Card>
+      <View style={styles.totalBalanceWrapper}>
+        <Card style={styles.totalBalanceCard} elevation={0}>
+          <Card.Content style={styles.totalBalanceContent}>
+            <Paragraph style={styles.totalBalanceLabel}>
+              Total Balance
+            </Paragraph>
+            <Title
+              style={[
+                styles.totalBalance,
+                {
+                  color:
+                    totalBalance >= 0
+                      ? theme.colors.primary
+                      : theme.colors.error,
+                },
+              ]}
+            >
+              ${totalBalance.toFixed(2)}
+            </Title>
+          </Card.Content>
+        </Card>
+      </View>
     </View>
   );
 
@@ -198,7 +204,7 @@ const styles = StyleSheet.create({
   header: {
     padding: 16,
     paddingTop: 24,
-    backgroundColor: "#fff",
+    backgroundColor: "#f5f5f5",
   },
   listContainer: {
     padding: 16,
@@ -280,8 +286,19 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
   },
+  totalBalanceWrapper: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    marginBottom: 16,
+    padding: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
   totalBalanceCard: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "transparent",
   },
   totalBalanceContent: {
     alignItems: "center",

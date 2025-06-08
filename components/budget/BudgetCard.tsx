@@ -204,6 +204,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
 const styles = StyleSheet.create({
   card: {
     marginBottom: 16,
+    marginTop: 8,
     borderRadius: 12,
   },
   content: {

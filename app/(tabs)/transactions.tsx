@@ -915,7 +915,8 @@ const styles = StyleSheet.create({
   },
   statsCard: {
     marginHorizontal: 16,
-    marginBottom: 8,
+    marginBottom: 16,
+    marginTop: 8,
   },
   statsContent: {
     flexDirection: "row",
