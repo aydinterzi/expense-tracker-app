@@ -99,6 +99,19 @@ export default function BudgetDetailsScreen() {
     }
   };
 
+  const getStatusTextColor = (status: string) => {
+    switch (status) {
+      case "good":
+        return theme.colors.onPrimary;
+      case "warning":
+        return "#ffffff";
+      case "exceeded":
+        return theme.colors.onError;
+      default:
+        return theme.colors.onSurface;
+    }
+  };
+
   const getPeriodText = (period: string) => {
     switch (period) {
       case "daily":
@@ -238,11 +251,12 @@ export default function BudgetDetailsScreen() {
                   style={[
                     styles.statusChip,
                     {
-                      backgroundColor:
-                        getStatusColor(budget.progress.status) + "20",
+                      backgroundColor: getStatusColor(budget.progress.status),
                     },
                   ]}
-                  textStyle={{ color: getStatusColor(budget.progress.status) }}
+                  textStyle={{
+                    color: getStatusTextColor(budget.progress.status),
+                  }}
                 >
                   {getStatusText(budget.progress.status)}
                 </Chip>

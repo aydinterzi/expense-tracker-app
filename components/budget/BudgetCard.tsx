@@ -51,6 +51,19 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
     }
   };
 
+  const getStatusTextColor = () => {
+    switch (budget.progress.status) {
+      case "good":
+        return theme.colors.onPrimary;
+      case "warning":
+        return "#ffffff";
+      case "exceeded":
+        return theme.colors.onError;
+      default:
+        return theme.colors.onSurface;
+    }
+  };
+
   const getPeriodText = () => {
     switch (budget.period) {
       case "daily":
@@ -164,10 +177,12 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             <View
               style={[
                 styles.statusBadge,
-                { backgroundColor: getStatusColor() + "20" },
+                { backgroundColor: getStatusColor() },
               ]}
             >
-              <Text style={[styles.statusText, { color: getStatusColor() }]}>
+              <Text
+                style={[styles.statusText, { color: getStatusTextColor() }]}
+              >
                 {getStatusText()}
               </Text>
             </View>

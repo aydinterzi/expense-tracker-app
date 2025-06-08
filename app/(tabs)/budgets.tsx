@@ -413,7 +413,7 @@ export default function BudgetsScreen() {
         {/* Floating Action Button */}
         <FAB
           icon="plus"
-          style={[styles.fab, { backgroundColor: theme.colors.secondary }]}
+          style={styles.fab}
           onPress={() => router.push("/budget/add")}
         />
 

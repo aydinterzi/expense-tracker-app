@@ -456,7 +456,7 @@ export default function DashboardScreen() {
             onPress: () => router.push("/(tabs)/analytics"),
           },
           {
-            icon: "budget",
+            icon: "wallet",
             label: "Create Budget",
             onPress: () => router.push("/budget/add"),
           },
