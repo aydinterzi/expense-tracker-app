@@ -1,6 +1,6 @@
 import { format, parseISO } from "date-fns";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import {
   Card,
   IconButton,
@@ -84,120 +84,113 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   };
 
   return (
-    <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
-      <Card
-        style={[styles.card, { backgroundColor: theme.colors.surface }]}
-        elevation={2}
-      >
-        <Card.Content style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.titleSection}>
-              <Text
-                style={[styles.budgetName, { color: theme.colors.onSurface }]}
-              >
-                {budget.name}
-              </Text>
-              <Text
-                style={[
-                  styles.categoryName,
-                  { color: theme.colors.onSurfaceVariant },
-                ]}
-              >
-                {budget.categoryName || budget.accountName || "General"}
-              </Text>
-            </View>
-            <View style={styles.actions}>
-              {onEdit && (
-                <IconButton
-                  icon="pencil"
-                  size={20}
-                  onPress={onEdit}
-                  iconColor={theme.colors.onSurfaceVariant}
-                />
-              )}
-              {onDelete && (
-                <IconButton
-                  icon="delete"
-                  size={20}
-                  onPress={onDelete}
-                  iconColor={theme.colors.error}
-                />
-              )}
-            </View>
-          </View>
-
-          {/* Amount and Progress */}
-          <View style={styles.progressSection}>
-            <View style={styles.amountRow}>
-              <Text style={[styles.spentAmount, { color: getStatusColor() }]}>
-                ${budget.progress.spent.toFixed(2)}
-              </Text>
-              <Text
-                style={[
-                  styles.totalAmount,
-                  { color: theme.colors.onSurfaceVariant },
-                ]}
-              >
-                / ${budget.amount.toFixed(2)}
-              </Text>
-            </View>
-
-            <View style={styles.progressContainer}>
-              <View style={styles.progressBarContainer}>
-                <ProgressBar
-                  progress={Math.min(budget.progress.percentage / 100, 1)}
-                  color={getStatusColor()}
-                  style={styles.progressBar}
-                />
-              </View>
-              <Text
-                style={[styles.percentageText, { color: getStatusColor() }]}
-              >
-                {budget.progress.percentage.toFixed(1)}%
-              </Text>
-            </View>
-
+    <Card
+      style={[styles.card, { backgroundColor: theme.colors.surface }]}
+      elevation={2}
+      onPress={onPress}
+      mode="elevated"
+    >
+      <Card.Content style={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.titleSection}>
+            <Text
+              style={[styles.budgetName, { color: theme.colors.onSurface }]}
+            >
+              {budget.name}
+            </Text>
             <Text
               style={[
-                styles.remainingAmount,
+                styles.categoryName,
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              {budget.progress.remaining >= 0
-                ? `$${budget.progress.remaining.toFixed(2)} remaining`
-                : `$${Math.abs(budget.progress.remaining).toFixed(
-                    2
-                  )} over budget`}
+              {budget.categoryName || budget.accountName || "General"}
             </Text>
           </View>
+          <View style={styles.actions}>
+            {onEdit && (
+              <IconButton
+                icon="pencil"
+                size={20}
+                onPress={onEdit}
+                iconColor={theme.colors.onSurfaceVariant}
+              />
+            )}
+            {onDelete && (
+              <IconButton
+                icon="delete"
+                size={20}
+                onPress={onDelete}
+                iconColor={theme.colors.error}
+              />
+            )}
+          </View>
+        </View>
 
-          {/* Status and Period */}
-          <View style={styles.footer}>
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: getStatusColor() },
-              ]}
-            >
-              <Text
-                style={[styles.statusText, { color: getStatusTextColor() }]}
-              >
-                {getStatusText()}
-              </Text>
-            </View>
+        {/* Amount and Progress */}
+        <View style={styles.progressSection}>
+          <View style={styles.amountRow}>
+            <Text style={[styles.spentAmount, { color: getStatusColor() }]}>
+              ${budget.progress.spent.toFixed(2)}
+            </Text>
             <Text
               style={[
-                styles.periodText,
+                styles.totalAmount,
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              {getPeriodText()} • {formatDate(budget.startDate)}
+              / ${budget.amount.toFixed(2)}
             </Text>
           </View>
-        </Card.Content>
-      </Card>
-    </TouchableOpacity>
+
+          <View style={styles.progressContainer}>
+            <View style={styles.progressBarContainer}>
+              <ProgressBar
+                progress={Math.min(budget.progress.percentage / 100, 1)}
+                color={getStatusColor()}
+                style={styles.progressBar}
+              />
+            </View>
+            <Text style={[styles.percentageText, { color: getStatusColor() }]}>
+              {budget.progress.percentage.toFixed(1)}%
+            </Text>
+          </View>
+
+          <Text
+            style={[
+              styles.remainingAmount,
+              { color: theme.colors.onSurfaceVariant },
+            ]}
+          >
+            {budget.progress.remaining >= 0
+              ? `$${budget.progress.remaining.toFixed(2)} remaining`
+              : `$${Math.abs(budget.progress.remaining).toFixed(
+                  2
+                )} over budget`}
+          </Text>
+        </View>
+
+        {/* Status and Period */}
+        <View style={styles.footer}>
+          <View
+            style={[styles.statusBadge, { backgroundColor: getStatusColor() }]}
+          >
+            <Text style={[styles.statusText, { color: getStatusTextColor() }]}>
+              {getStatusText()}
+            </Text>
+          </View>
+          <Text
+            style={[
+              styles.periodText,
+              { color: theme.colors.onSurfaceVariant },
+            ]}
+          >
+            {getPeriodText()} • {formatDate(budget.startDate)}
+          </Text>
+        </View>
+      </Card.Content>
+    </Card>
   );
 };
 
