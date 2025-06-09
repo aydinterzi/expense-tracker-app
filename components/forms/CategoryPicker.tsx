@@ -72,10 +72,6 @@ export const CategoryPicker: React.FC<CategoryPickerProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>
-        {transactionType === "expense" ? "Expense" : "Income"} Category
-      </Text>
-
       {selectedCategoryId && (
         <View style={styles.selectedContainer}>
           <Chip

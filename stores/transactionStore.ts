@@ -79,6 +79,14 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
         loading: false,
       }));
 
+      // Update account store to reflect new balance
+      try {
+        const { useAccountStore } = await import("./accountStore");
+        await useAccountStore.getState().loadAccounts();
+      } catch (error) {
+        console.error("Failed to refresh accounts:", error);
+      }
+
       // Trigger budget monitoring after adding transaction
       try {
         const { triggerBudgetCheck } = await import(
@@ -111,6 +119,14 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
           ),
           loading: false,
         }));
+
+        // Update account store to reflect new balance
+        try {
+          const { useAccountStore } = await import("./accountStore");
+          await useAccountStore.getState().loadAccounts();
+        } catch (error) {
+          console.error("Failed to refresh accounts:", error);
+        }
       }
     } catch (error) {
       set({
@@ -132,6 +148,14 @@ export const useTransactionStore = create<TransactionStore>((set, get) => ({
           transactions: state.transactions.filter((t) => t.id !== id),
           loading: false,
         }));
+
+        // Update account store to reflect new balance
+        try {
+          const { useAccountStore } = await import("./accountStore");
+          await useAccountStore.getState().loadAccounts();
+        } catch (error) {
+          console.error("Failed to refresh accounts:", error);
+        }
       }
     } catch (error) {
       set({

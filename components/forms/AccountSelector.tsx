@@ -85,8 +85,6 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Select Account</Text>
-
       <View style={styles.accountsContainer}>
         {accounts.filter((account) => account.isActive).map(renderAccount)}
       </View>
