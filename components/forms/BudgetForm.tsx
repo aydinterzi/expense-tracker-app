@@ -169,7 +169,19 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
   };
 
   const getAccountIcon = (account: Account) => {
-    return account.icon || "wallet";
+    // Use account type-based icon mapping like in AccountSelector
+    switch (account.type) {
+      case "bank":
+        return "card";
+      case "cash":
+        return "cash";
+      case "credit_card":
+        return "card-outline";
+      case "investment":
+        return "trending-up";
+      default:
+        return "wallet";
+    }
   };
 
   return (
@@ -276,33 +288,35 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
                     }}
                     value={selectedCategory?.toString() || ""}
                   >
-                    {categories.map((category) => (
-                      <View key={category.id} style={styles.radioItem}>
-                        <View style={styles.radioContent}>
-                          <View
-                            style={[
-                              styles.categoryIcon,
-                              { backgroundColor: category.color },
-                            ]}
-                          >
-                            <Ionicons
-                              name={getCategoryIcon(category) as any}
-                              size={24}
-                              color="#fff"
-                            />
+                    {categories
+                      .filter((category) => category.type === "expense")
+                      .map((category) => (
+                        <View key={category.id} style={styles.radioItem}>
+                          <View style={styles.radioContent}>
+                            <View
+                              style={[
+                                styles.categoryIcon,
+                                { backgroundColor: category.color },
+                              ]}
+                            >
+                              <Ionicons
+                                name={getCategoryIcon(category) as any}
+                                size={24}
+                                color="#fff"
+                              />
+                            </View>
+                            <Text
+                              style={[
+                                styles.radioLabel,
+                                { color: theme.colors.onSurface },
+                              ]}
+                            >
+                              {category.name}
+                            </Text>
                           </View>
-                          <Text
-                            style={[
-                              styles.radioLabel,
-                              { color: theme.colors.onSurface },
-                            ]}
-                          >
-                            {category.name}
-                          </Text>
+                          <RadioButton value={category.id.toString()} />
                         </View>
-                        <RadioButton value={category.id.toString()} />
-                      </View>
-                    ))}
+                      ))}
                   </RadioButton.Group>
                 )}
               />
