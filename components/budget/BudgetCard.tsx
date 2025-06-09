@@ -1,5 +1,5 @@
 import { format, parseISO } from "date-fns";
-import React from "react";
+import * as React from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { BudgetWithDetails } from "../../db/services/budgetService";
+import { useSettingsStore } from "../../stores/settingsStore";
 
 interface BudgetCardProps {
   budget: BudgetWithDetails;
@@ -24,6 +25,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   onDelete,
 }) => {
   const theme = useTheme();
+  const { formatCurrency, formatDate: formatSettingsDate } = useSettingsStore();
 
   const getStatusColor = () => {
     switch (budget.progress.status) {
@@ -79,7 +81,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDateLocal = (dateString: string) => {
     return format(parseISO(dateString), "MMM dd, yyyy");
   };
 
@@ -99,12 +101,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
   };
 
   return (
-    <Card
-      style={[styles.card, { backgroundColor: theme.colors.surface }]}
-      elevation={2}
-      onPress={onPress}
-      mode="elevated"
-    >
+    <Card style={styles.card} elevation={2} onPress={onPress} mode="elevated">
       <Card.Content style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
@@ -147,7 +144,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
         <View style={styles.progressSection}>
           <View style={styles.amountRow}>
             <Text style={[styles.spentAmount, { color: getStatusColor() }]}>
-              ${budget.progress.spent.toFixed(2)}
+              {formatCurrency(budget.progress.spent)}
             </Text>
             <Text
               style={[
@@ -155,7 +152,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
                 { color: theme.colors.onSurfaceVariant },
               ]}
             >
-              / ${budget.amount.toFixed(2)}
+              / {formatCurrency(budget.amount)}
             </Text>
           </View>
 
@@ -179,9 +176,9 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
             ]}
           >
             {budget.progress.remaining >= 0
-              ? `$${budget.progress.remaining.toFixed(2)} remaining`
-              : `$${Math.abs(budget.progress.remaining).toFixed(
-                  2
+              ? `${formatCurrency(budget.progress.remaining)} remaining`
+              : `${formatCurrency(
+                  Math.abs(budget.progress.remaining)
                 )} over budget`}
           </Text>
         </View>
@@ -201,7 +198,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
               { color: theme.colors.onSurfaceVariant },
             ]}
           >
-            {getPeriodText()} • {formatDate(budget.startDate)}
+            {getPeriodText()} • {formatDateLocal(budget.startDate)}
           </Text>
         </View>
       </Card.Content>

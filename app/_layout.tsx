@@ -7,17 +7,17 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
 import { runMigrations } from "../db/client";
 import { seedData } from "../db/migrations/seed";
+import { useSettingsStore } from "../stores/settingsStore";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const { isDarkMode } = useSettingsStore();
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
@@ -74,8 +74,9 @@ export default function RootLayout() {
     return null;
   }
 
-  const paperTheme = colorScheme === "dark" ? MD3DarkTheme : MD3LightTheme;
-  const navTheme = colorScheme === "dark" ? DarkTheme : DefaultTheme;
+  // Use user's preference from settings store instead of system color scheme
+  const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
+  const navTheme = isDarkMode ? DarkTheme : DefaultTheme;
 
   return (
     <PaperProvider theme={paperTheme}>

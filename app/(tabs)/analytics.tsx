@@ -1,10 +1,11 @@
 import { format, subMonths } from "date-fns";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { Card, SegmentedButtons, Text, useTheme } from "react-native-paper";
 import { LineChart, PieChart } from "../../components/charts";
 import { useBudgetStore } from "../../stores/budgetStore";
 import { useCategoryStore } from "../../stores/categoryStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 import { useTransactionStore } from "../../stores/transactionStore";
 
 type TimePeriod = "3m" | "6m" | "12m";
@@ -14,6 +15,7 @@ export default function AnalyticsScreen() {
   const { transactions, loadTransactions } = useTransactionStore();
   const { budgets, loadBudgets } = useBudgetStore();
   const { categories, loadCategories } = useCategoryStore();
+  const { formatCurrency, currency } = useSettingsStore();
 
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>("6m");
   const [loading, setLoading] = useState(false);
@@ -231,30 +233,63 @@ export default function AnalyticsScreen() {
             {getPeriodLabel()} Summary
           </Text>
           <View style={styles.statsGrid}>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>
+            <View
+              style={[
+                styles.statItem,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <Text
+                variant="bodySmall"
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
                 Total Income
               </Text>
               <Text
                 variant="titleMedium"
                 style={[styles.statValue, { color: theme.colors.primary }]}
               >
-                ${summaryStats.totalIncome.toFixed(0)}
+                {formatCurrency(summaryStats.totalIncome)}
               </Text>
             </View>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>
+            <View
+              style={[
+                styles.statItem,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <Text
+                variant="bodySmall"
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
                 Total Expenses
               </Text>
               <Text
                 variant="titleMedium"
                 style={[styles.statValue, { color: theme.colors.error }]}
               >
-                ${summaryStats.totalExpense.toFixed(0)}
+                {formatCurrency(summaryStats.totalExpense)}
               </Text>
             </View>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>
+            <View
+              style={[
+                styles.statItem,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <Text
+                variant="bodySmall"
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
                 Net Amount
               </Text>
               <Text
@@ -269,15 +304,32 @@ export default function AnalyticsScreen() {
                   },
                 ]}
               >
-                ${summaryStats.netAmount.toFixed(0)}
+                {formatCurrency(summaryStats.netAmount)}
               </Text>
             </View>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>
+            <View
+              style={[
+                styles.statItem,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
+            >
+              <Text
+                variant="bodySmall"
+                style={[
+                  styles.statLabel,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
                 Avg Monthly
               </Text>
-              <Text variant="titleMedium" style={styles.statValue}>
-                ${summaryStats.avgMonthlyExpense.toFixed(0)}
+              <Text
+                variant="titleMedium"
+                style={[
+                  styles.statValue,
+                  { color: theme.colors.onSurfaceVariant },
+                ]}
+              >
+                {formatCurrency(summaryStats.avgMonthlyExpense)}
               </Text>
             </View>
           </View>
@@ -301,7 +353,7 @@ export default function AnalyticsScreen() {
           data={monthlyTrends}
           title="Monthly Spending Trends"
           height={240}
-          yAxisSuffix="$"
+          yAxisSuffix={currency.symbol}
           bezier={true}
         />
       )}
@@ -313,7 +365,7 @@ export default function AnalyticsScreen() {
           data={incomeVsExpense}
           title="Net Income vs Expenses"
           height={240}
-          yAxisSuffix="$"
+          yAxisSuffix={currency.symbol}
           bezier={false}
           showDots={true}
         />
@@ -395,7 +447,6 @@ const styles = StyleSheet.create({
     width: "48%",
     marginBottom: 8,
     padding: 8,
-    backgroundColor: "#f8f9fa",
     borderRadius: 6,
   },
   statLabel: {

@@ -21,11 +21,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Account } from "../../db/schema/accounts";
 import { transactionService } from "../../db/services/transactionService";
 import { useAccountStore } from "../../stores/accountStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 
 export default function AccountsScreen() {
   const theme = useTheme();
   const { accounts, loadAccounts, loading, getTotalBalance, deleteAccount } =
     useAccountStore();
+  const { formatCurrency } = useSettingsStore();
   const [totalBalance, setTotalBalance] = React.useState(0);
   const [menuVisible, setMenuVisible] = React.useState(false);
   const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(
@@ -160,7 +162,7 @@ export default function AccountsScreen() {
                   },
                 ]}
               >
-                ${(item.currentBalance || 0).toFixed(2)}
+                {formatCurrency(item.currentBalance || 0)}
               </Title>
               <Menu
                 visible={menuVisible && selectedAccount?.id === item.id}
@@ -196,7 +198,7 @@ export default function AccountsScreen() {
         {item.initialBalance !== item.currentBalance && (
           <View style={styles.balanceChange}>
             <Paragraph style={styles.initialBalance}>
-              Initial: ${(item.initialBalance || 0).toFixed(2)}
+              Initial: {formatCurrency(item.initialBalance || 0)}
             </Paragraph>
             <Paragraph
               style={[
@@ -212,10 +214,9 @@ export default function AccountsScreen() {
               {(item.currentBalance || 0) - (item.initialBalance || 0) >= 0
                 ? "+"
                 : ""}
-              $
-              {(
+              {formatCurrency(
                 (item.currentBalance || 0) - (item.initialBalance || 0)
-              ).toFixed(2)}
+              )}
             </Paragraph>
           </View>
         )}
@@ -225,7 +226,12 @@ export default function AccountsScreen() {
 
   const ListHeaderComponent = () => (
     <View style={styles.header}>
-      <View style={styles.totalBalanceWrapper}>
+      <View
+        style={[
+          styles.totalBalanceWrapper,
+          { backgroundColor: theme.colors.surface },
+        ]}
+      >
         <Card style={styles.totalBalanceCard} elevation={0}>
           <Card.Content style={styles.totalBalanceContent}>
             <Paragraph style={styles.totalBalanceLabel}>
@@ -242,7 +248,7 @@ export default function AccountsScreen() {
                 },
               ]}
             >
-              ${totalBalance.toFixed(2)}
+              {formatCurrency(totalBalance)}
             </Title>
           </Card.Content>
         </Card>
@@ -251,8 +257,16 @@ export default function AccountsScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.innerContainer}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={["top"]}
+    >
+      <View
+        style={[
+          styles.innerContainer,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <FlatList
           data={accounts}
           renderItem={renderAccount}
@@ -264,7 +278,9 @@ export default function AccountsScreen() {
           ListHeaderComponent={ListHeaderComponent}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Paragraph style={styles.emptyText}>
+              <Paragraph
+                style={[styles.emptyText, { color: theme.colors.onSurface }]}
+              >
                 No accounts found. Add your first account!
               </Paragraph>
             </View>
@@ -284,16 +300,13 @@ export default function AccountsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   innerContainer: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   header: {
     padding: 16,
     paddingTop: 24,
-    backgroundColor: "#f5f5f5",
   },
   listContainer: {
     padding: 16,
@@ -348,7 +361,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingTop: 12,
     borderTopWidth: 1,
-    borderTopColor: "#eee",
+    borderTopColor: "rgba(128, 128, 128, 0.3)",
   },
   initialBalance: {
     fontSize: 12,
@@ -376,7 +389,6 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   totalBalanceWrapper: {
-    backgroundColor: "#fff",
     borderRadius: 12,
     marginBottom: 16,
     padding: 16,

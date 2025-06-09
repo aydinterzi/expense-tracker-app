@@ -18,6 +18,7 @@ import { SuccessModal } from "../../components/ui/SuccessModal";
 import { useAccountStore } from "../../stores/accountStore";
 import { useBudgetStore } from "../../stores/budgetStore";
 import { useCategoryStore } from "../../stores/categoryStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 
 export default function BudgetsScreen() {
   const theme = useTheme();
@@ -40,6 +41,7 @@ export default function BudgetsScreen() {
 
   const { categories, loadCategories } = useCategoryStore();
   const { accounts, loadAccounts } = useAccountStore();
+  const { formatCurrency } = useSettingsStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -200,7 +202,7 @@ export default function BudgetsScreen() {
                     { color: theme.colors.secondary },
                   ]}
                 >
-                  ${summary.totalBudgetAmount.toFixed(0)}
+                  {formatCurrency(summary.totalBudgetAmount)}
                 </Text>
                 <Text
                   style={[
@@ -218,7 +220,7 @@ export default function BudgetsScreen() {
                     { color: theme.colors.tertiary },
                   ]}
                 >
-                  ${summary.totalSpent.toFixed(0)}
+                  {formatCurrency(summary.totalSpent)}
                 </Text>
                 <Text
                   style={[

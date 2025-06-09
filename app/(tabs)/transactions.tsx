@@ -1,6 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlatList, StyleSheet, View } from "react-native";
 import {
   Button,
@@ -22,6 +22,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Transaction } from "../../db/schema/transactions";
 import { useAccountStore } from "../../stores/accountStore";
 import { useCategoryStore } from "../../stores/categoryStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 import { useTransactionStore } from "../../stores/transactionStore";
 
 interface TransactionFilters {
@@ -50,6 +51,7 @@ export default function TransactionsScreen() {
     useTransactionStore();
   const { categories, loadCategories } = useCategoryStore();
   const { accounts, loadAccounts } = useAccountStore();
+  const { formatCurrency, formatDate } = useSettingsStore();
 
   // Filter and Search State
   const [filters, setFilters] = useState<TransactionFilters>({
@@ -346,7 +348,7 @@ export default function TransactionsScreen() {
                 {getAccountName(item.accountId)}
               </Paragraph>
               <Paragraph style={styles.transactionDate}>
-                {new Date(item.date).toLocaleDateString()}
+                {formatDate(new Date(item.date))}
               </Paragraph>
             </View>
             <View style={styles.amountContainer}>
@@ -361,7 +363,8 @@ export default function TransactionsScreen() {
                   },
                 ]}
               >
-                {item.type === "income" ? "+" : "-"}${item.amount.toFixed(2)}
+                {item.type === "income" ? "+" : "-"}
+                {formatCurrency(item.amount)}
               </Title>
               <Paragraph style={styles.transactionType}>
                 {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
@@ -391,8 +394,16 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={["top"]}>
-      <View style={styles.innerContainer}>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      edges={["top"]}
+    >
+      <View
+        style={[
+          styles.innerContainer,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         {/* Header with Search and Filter */}
         <View style={styles.header}>
           <View style={styles.searchRow}>
@@ -400,7 +411,10 @@ export default function TransactionsScreen() {
               placeholder="Search transactions..."
               onChangeText={(text) => updateFilters({ search: text })}
               value={filters.search}
-              style={styles.searchbar}
+              style={[
+                styles.searchbar,
+                { backgroundColor: theme.colors.surfaceVariant },
+              ]}
             />
             <IconButton
               icon="filter-variant"
@@ -409,15 +423,31 @@ export default function TransactionsScreen() {
               onPress={() => setShowFilters(!showFilters)}
             />
             {activeFilterCount > 0 && (
-              <View style={styles.filterBadge}>
-                <Text style={styles.filterBadgeText}>{activeFilterCount}</Text>
+              <View
+                style={[
+                  styles.filterBadge,
+                  { backgroundColor: theme.colors.error },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.filterBadgeText,
+                    { color: theme.colors.onError },
+                  ]}
+                >
+                  {activeFilterCount}
+                </Text>
               </View>
             )}
           </View>
 
           {/* Sort Options */}
           <View style={styles.sortRow}>
-            <Text style={styles.sortLabel}>Sort by:</Text>
+            <Text
+              style={[styles.sortLabel, { color: theme.colors.onBackground }]}
+            >
+              Sort by:
+            </Text>
             <Chip
               selected={sortBy === "date"}
               onPress={() => setSortBy("date")}
@@ -755,18 +785,14 @@ export default function TransactionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   innerContainer: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   header: {
-    padding: 16,
+    paddingHorizontal: 16,
     paddingTop: 16,
-    backgroundColor: "#fff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
+    paddingBottom: 8,
   },
   searchRow: {
     flexDirection: "row",
@@ -776,14 +802,12 @@ const styles = StyleSheet.create({
   searchbar: {
     flex: 1,
     elevation: 0,
-    backgroundColor: "#f5f5f5",
     marginRight: 8,
   },
   filterBadge: {
     position: "absolute",
     top: 8,
     right: 8,
-    backgroundColor: "#ff6b6b",
     borderRadius: 10,
     width: 20,
     height: 20,
@@ -791,7 +815,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   filterBadgeText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "bold",
   },

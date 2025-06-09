@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAccountStore } from "../../stores/accountStore";
 import { useBudgetStore } from "../../stores/budgetStore";
 import { useCategoryStore } from "../../stores/categoryStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 import { useTransactionStore } from "../../stores/transactionStore";
 
 export default function DashboardScreen() {
@@ -24,6 +25,7 @@ export default function DashboardScreen() {
   const { transactions, loadTransactions } = useTransactionStore();
   const { accounts, loadAccounts } = useAccountStore();
   const { categories, loadCategories } = useCategoryStore();
+  const { formatCurrency } = useSettingsStore();
   const {
     activeBudgets,
     alerts,
@@ -157,7 +159,7 @@ export default function DashboardScreen() {
               <Title
                 style={[styles.statValue, { color: theme.colors.primary }]}
               >
-                ${totalBalance.toFixed(2)}
+                {formatCurrency(totalBalance)}
               </Title>
               <Paragraph style={styles.statLabel}>Total Balance</Paragraph>
             </Card.Content>
@@ -168,7 +170,7 @@ export default function DashboardScreen() {
               <Title
                 style={[styles.statValue, { color: theme.colors.secondary }]}
               >
-                ${currentMonthSpending.toFixed(2)}
+                {formatCurrency(currentMonthSpending)}
               </Title>
               <Paragraph style={styles.statLabel}>This Month</Paragraph>
               <Text
@@ -262,8 +264,8 @@ export default function DashboardScreen() {
 
               <View style={styles.budgetProgressSection}>
                 <Text style={styles.budgetProgressLabel}>
-                  Overall Budget Usage: ${summary.totalSpent.toFixed(2)} / $
-                  {summary.totalBudgetAmount.toFixed(2)}
+                  Overall Budget Usage: {formatCurrency(summary.totalSpent)} /{" "}
+                  {formatCurrency(summary.totalBudgetAmount)}
                 </Text>
                 <ProgressBar
                   progress={Math.min(
@@ -309,8 +311,8 @@ export default function DashboardScreen() {
                   <View style={styles.budgetQuickInfo}>
                     <Text style={styles.budgetQuickName}>{budget.name}</Text>
                     <Text style={styles.budgetQuickAmount}>
-                      ${budget.spentAmount?.toFixed(2) || "0.00"} / $
-                      {budget.amount.toFixed(2)}
+                      {formatCurrency(budget.spentAmount)} /{" "}
+                      {formatCurrency(budget.amount)}
                     </Text>
                   </View>
                   <View style={styles.budgetQuickProgress}>
@@ -370,7 +372,7 @@ export default function DashboardScreen() {
                         {index + 1}. {category.name}
                       </Text>
                       <Text style={styles.categoryInsightAmount}>
-                        ${category.amount.toFixed(2)}
+                        {formatCurrency(category.amount)}
                       </Text>
                     </View>
                     <Text style={styles.categoryInsightPercentage}>
@@ -430,8 +432,8 @@ export default function DashboardScreen() {
                       },
                     ]}
                   >
-                    {transaction.type === "income" ? "+" : "-"}$
-                    {transaction.amount.toFixed(2)}
+                    {transaction.type === "income" ? "+" : "-"}
+                    {formatCurrency(transaction.amount)}
                   </Paragraph>
                 </View>
               ))

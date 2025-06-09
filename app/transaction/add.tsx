@@ -1,6 +1,6 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { router, Stack } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Platform,
   ScrollView,
@@ -172,11 +172,14 @@ export default function AddTransactionScreen() {
           },
         }}
       />
-      <SafeAreaView style={styles.container} edges={["top"]}>
+      <SafeAreaView
+        style={[styles.container, { backgroundColor: theme.colors.background }]}
+        edges={["top"]}
+      >
         <View
           style={[
             styles.innerContainer,
-            { backgroundColor: theme.colors.surface },
+            { backgroundColor: theme.colors.background },
           ]}
         >
           <ScrollView
@@ -415,7 +418,6 @@ export default function AddTransactionScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f9fa",
   },
   innerContainer: {
     flex: 1,

@@ -3,7 +3,7 @@ import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Card, RadioButton, Text, useTheme } from "react-native-paper";
 import { Account } from "../../db/schema/accounts";
-import { formatCurrency } from "../../utils/currency";
+import { useSettingsStore } from "../../stores/settingsStore";
 
 interface AccountSelectorProps {
   accounts: Account[];
@@ -19,6 +19,7 @@ export const AccountSelector: React.FC<AccountSelectorProps> = ({
   error,
 }) => {
   const theme = useTheme();
+  const { formatCurrency } = useSettingsStore();
 
   const getAccountIcon = (type: string) => {
     switch (type) {
