@@ -22,7 +22,7 @@ export const transactionService = {
     return await db
       .select()
       .from(transactions)
-      .orderBy(desc(transactions.date));
+      .orderBy(desc(transactions.date), desc(transactions.createdAt));
   },
 
   async getTransactionById(id: number): Promise<Transaction | undefined> {
@@ -65,13 +65,13 @@ export const transactionService = {
         .select()
         .from(transactions)
         .where(and(...conditions))
-        .orderBy(desc(transactions.date));
+        .orderBy(desc(transactions.date), desc(transactions.createdAt));
     }
 
     return await db
       .select()
       .from(transactions)
-      .orderBy(desc(transactions.date));
+      .orderBy(desc(transactions.date), desc(transactions.createdAt));
   },
 
   async createTransaction(
@@ -146,7 +146,7 @@ export const transactionService = {
       .where(
         and(gte(transactions.date, startDate), lte(transactions.date, endDate))
       )
-      .orderBy(desc(transactions.date));
+      .orderBy(desc(transactions.date), desc(transactions.createdAt));
   },
 
   async updateAccountBalance(transaction: Transaction): Promise<void> {

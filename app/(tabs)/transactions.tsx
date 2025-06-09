@@ -165,6 +165,11 @@ export default function TransactionsScreen() {
       switch (sortBy) {
         case "date":
           comparison = new Date(a.date).getTime() - new Date(b.date).getTime();
+          // If dates are the same, sort by createdAt for consistent ordering
+          if (comparison === 0 && a.createdAt && b.createdAt) {
+            comparison =
+              new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          }
           break;
         case "amount":
           comparison = a.amount - b.amount;
@@ -314,10 +319,15 @@ export default function TransactionsScreen() {
           if (bulkActions.showBulkActions) {
             toggleSelectTransaction(item.id);
           } else {
-            router.push("/transaction/add");
+            router.push(`/transaction/edit?id=${item.id}`);
           }
         }}
-        onLongPress={() => toggleSelectTransaction(item.id)}
+        onLongPress={() => {
+          if (!bulkActions.showBulkActions) {
+            setBulkActions((prev) => ({ ...prev, showBulkActions: true }));
+          }
+          toggleSelectTransaction(item.id);
+        }}
       >
         <Card.Content>
           <View style={styles.transactionHeader}>
@@ -356,6 +366,20 @@ export default function TransactionsScreen() {
               <Paragraph style={styles.transactionType}>
                 {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
               </Paragraph>
+              {!bulkActions.showBulkActions && (
+                <IconButton
+                  icon="dots-vertical"
+                  size={20}
+                  onPress={() => {
+                    setBulkActions((prev) => ({
+                      ...prev,
+                      showBulkActions: true,
+                      selectedItems: new Set([item.id]),
+                    }));
+                  }}
+                  style={styles.actionButton}
+                />
+              )}
             </View>
           </View>
           {item.notes && (
@@ -936,5 +960,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.7,
     textAlign: "center",
+  },
+  actionButton: {
+    margin: 0,
+    marginTop: 4,
   },
 });

@@ -1,7 +1,8 @@
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { router, Stack } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
@@ -47,11 +48,13 @@ interface FormErrors {
   description?: string;
 }
 
-export default function AddTransactionScreen() {
+export default function EditTransactionScreen() {
   const theme = useTheme();
+  const { id } = useLocalSearchParams<{ id: string }>();
   const { categories, loadCategories } = useCategoryStore();
   const { accounts, loadAccounts } = useAccountStore();
-  const { addTransaction, loading } = useTransactionStore();
+  const { transactions, updateTransaction, deleteTransaction, loading } =
+    useTransactionStore();
 
   const [formData, setFormData] = useState<FormData>({
     type: "expense",
@@ -66,11 +69,28 @@ export default function AddTransactionScreen() {
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadCategories();
     loadAccounts();
-  }, []);
+
+    // Load existing transaction data
+    if (id) {
+      const transaction = transactions.find((t) => t.id === parseInt(id));
+      if (transaction) {
+        setFormData({
+          type: transaction.type as "expense" | "income",
+          amount: transaction.amount,
+          categoryId: transaction.categoryId,
+          accountId: transaction.accountId,
+          description: transaction.description || "",
+          notes: transaction.notes || "",
+          date: transaction.date,
+        });
+      }
+    }
+  }, [id, transactions]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -101,7 +121,7 @@ export default function AddTransactionScreen() {
     }
 
     try {
-      await addTransaction({
+      await updateTransaction(parseInt(id!), {
         type: formData.type,
         amount: formData.amount,
         categoryId: formData.categoryId!,
@@ -109,27 +129,50 @@ export default function AddTransactionScreen() {
         description: formData.description.trim(),
         notes: formData.notes.trim() || null,
         date: formData.date,
-        receiptPhoto: null,
-        isRecurring: false,
-        recurringId: null,
-        tags: null,
-        location: null,
       });
 
-      // Show success modal instead of snackbar
       setShowSuccessModal(true);
     } catch (error) {
-      setSnackbarMessage("Failed to add transaction. Please try again.");
+      setSnackbarMessage("Failed to update transaction. Please try again.");
       setSnackbarVisible(true);
-      console.error("Error adding transaction:", error);
+      console.error("Error updating transaction:", error);
     }
+  };
+
+  const handleDelete = async () => {
+    Alert.alert(
+      "Delete Transaction",
+      "Are you sure you want to delete this transaction? This action cannot be undone.",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            setIsDeleting(true);
+            try {
+              await deleteTransaction(parseInt(id!));
+              router.back();
+            } catch (error) {
+              setSnackbarMessage(
+                "Failed to delete transaction. Please try again."
+              );
+              setSnackbarVisible(true);
+              console.error("Error deleting transaction:", error);
+            } finally {
+              setIsDeleting(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleSuccessModalClose = () => {
     setShowSuccessModal(false);
-
-    // Navigate back immediately without resetting form here
-    // The form will be reset when the component unmounts naturally
     router.back();
   };
 
@@ -155,14 +198,22 @@ export default function AddTransactionScreen() {
 
     return `${type === "income" ? "Income" : "Expense"} of $${amount.toFixed(
       2
-    )} has been added${account ? ` to ${account.name}` : ""}.`;
+    )} has been updated${account ? ` in ${account.name}` : ""}.`;
   };
+
+  if (!id) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <Text>Transaction not found</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <>
       <Stack.Screen
         options={{
-          title: "Add Transaction",
+          title: "Edit Transaction",
           headerStyle: {
             backgroundColor: theme.colors.surface,
           },
@@ -170,6 +221,14 @@ export default function AddTransactionScreen() {
           headerTitleStyle: {
             fontWeight: "600",
           },
+          headerRight: () => (
+            <IconButton
+              icon="delete"
+              iconColor={theme.colors.error}
+              onPress={handleDelete}
+              disabled={isDeleting}
+            />
+          ),
         }}
       />
       <SafeAreaView style={styles.container} edges={["top"]}>
@@ -375,7 +434,7 @@ export default function AddTransactionScreen() {
                 mode="contained"
                 onPress={handleSubmit}
                 loading={loading}
-                disabled={loading}
+                disabled={loading || isDeleting}
                 style={[
                   styles.submitButton,
                   { backgroundColor: theme.colors.primary },
@@ -383,7 +442,7 @@ export default function AddTransactionScreen() {
                 contentStyle={styles.submitButtonContent}
                 labelStyle={styles.submitButtonLabel}
               >
-                Add Transaction
+                Update Transaction
               </Button>
             </View>
           </ScrollView>
@@ -391,7 +450,7 @@ export default function AddTransactionScreen() {
           {/* Success Modal */}
           <SuccessModal
             visible={showSuccessModal}
-            title="Transaction Added!"
+            title="Transaction Updated!"
             message={getSuccessMessage()}
             onClose={handleSuccessModalClose}
             autoClose={true}
