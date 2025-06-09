@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   FAB,
-  IconButton,
   Searchbar,
   SegmentedButtons,
   Snackbar,
@@ -167,153 +166,133 @@ export default function BudgetsScreen() {
           { backgroundColor: theme.colors.background },
         ]}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text
-            style={[styles.headerTitle, { color: theme.colors.onBackground }]}
-          >
-            Budgets
-          </Text>
-          <IconButton
-            icon="refresh"
-            size={24}
-            onPress={handleRefresh}
-            iconColor={theme.colors.onBackground}
-          />
-        </View>
-
-        {/* Summary Card */}
+        {/* Compact Summary */}
         {summary && (
-          <Card
-            style={[
-              styles.summaryCard,
-              { backgroundColor: theme.colors.surface },
-            ]}
-            elevation={2}
-          >
-            <Card.Content>
-              <Text
-                style={[styles.summaryTitle, { color: theme.colors.onSurface }]}
-              >
-                Budget Overview
-              </Text>
-              <View style={styles.summaryRow}>
-                <View style={styles.summaryItem}>
-                  <Text
-                    style={[
-                      styles.summaryValue,
-                      { color: theme.colors.primary },
-                    ]}
-                  >
-                    {summary.totalBudgets}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.summaryLabel,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Total Budgets
-                  </Text>
-                </View>
-                <View style={styles.summaryItem}>
-                  <Text
-                    style={[
-                      styles.summaryValue,
-                      { color: theme.colors.secondary },
-                    ]}
-                  >
-                    ${summary.totalBudgetAmount.toFixed(0)}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.summaryLabel,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Total Budget
-                  </Text>
-                </View>
-                <View style={styles.summaryItem}>
-                  <Text
-                    style={[
-                      styles.summaryValue,
-                      { color: theme.colors.tertiary },
-                    ]}
-                  >
-                    ${summary.totalSpent.toFixed(0)}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.summaryLabel,
-                      { color: theme.colors.onSurfaceVariant },
-                    ]}
-                  >
-                    Total Spent
-                  </Text>
-                </View>
+          <View style={styles.compactSummary}>
+            <Text
+              style={[
+                styles.summaryTitle,
+                { color: theme.colors.onBackground },
+              ]}
+            >
+              Budget Overview
+            </Text>
+            <View style={styles.compactRow}>
+              <View style={styles.compactItem}>
+                <Text
+                  style={[styles.compactValue, { color: theme.colors.primary }]}
+                >
+                  {summary.totalBudgets}
+                </Text>
+                <Text
+                  style={[
+                    styles.compactLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Total Budgets
+                </Text>
               </View>
+              <View style={styles.compactItem}>
+                <Text
+                  style={[
+                    styles.compactValue,
+                    { color: theme.colors.secondary },
+                  ]}
+                >
+                  ${summary.totalBudgetAmount.toFixed(0)}
+                </Text>
+                <Text
+                  style={[
+                    styles.compactLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Total Budget
+                </Text>
+              </View>
+              <View style={styles.compactItem}>
+                <Text
+                  style={[
+                    styles.compactValue,
+                    { color: theme.colors.tertiary },
+                  ]}
+                >
+                  ${summary.totalSpent.toFixed(0)}
+                </Text>
+                <Text
+                  style={[
+                    styles.compactLabel,
+                    { color: theme.colors.onSurfaceVariant },
+                  ]}
+                >
+                  Total Spent
+                </Text>
+              </View>
+            </View>
 
-              <View style={styles.statusRow}>
-                <View
+            <View style={styles.compactStatusRow}>
+              <View
+                style={[
+                  styles.compactStatusItem,
+                  { backgroundColor: theme.colors.primary },
+                ]}
+              >
+                <Text
                   style={[
-                    styles.statusItem,
-                    { backgroundColor: theme.colors.primary },
+                    styles.compactStatusCount,
+                    { color: theme.colors.onPrimary },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.statusCount,
-                      { color: theme.colors.onPrimary },
-                    ]}
-                  >
-                    {summary.budgetsOnTrack}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statusLabel,
-                      { color: theme.colors.onPrimary },
-                    ]}
-                  >
-                    On Track
-                  </Text>
-                </View>
-                <View
-                  style={[styles.statusItem, { backgroundColor: "#ff9500" }]}
-                >
-                  <Text style={[styles.statusCount, { color: "#ffffff" }]}>
-                    {summary.budgetsInWarning}
-                  </Text>
-                  <Text style={[styles.statusLabel, { color: "#ffffff" }]}>
-                    Warning
-                  </Text>
-                </View>
-                <View
+                  {summary.budgetsOnTrack}
+                </Text>
+                <Text
                   style={[
-                    styles.statusItem,
-                    { backgroundColor: theme.colors.error },
+                    styles.compactStatusLabel,
+                    { color: theme.colors.onPrimary },
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.statusCount,
-                      { color: theme.colors.onError },
-                    ]}
-                  >
-                    {summary.budgetsExceeded}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.statusLabel,
-                      { color: theme.colors.onError },
-                    ]}
-                  >
-                    Exceeded
-                  </Text>
-                </View>
+                  On Track
+                </Text>
               </View>
-            </Card.Content>
-          </Card>
+              <View
+                style={[
+                  styles.compactStatusItem,
+                  { backgroundColor: "#ff9500" },
+                ]}
+              >
+                <Text style={[styles.compactStatusCount, { color: "#ffffff" }]}>
+                  {summary.budgetsInWarning}
+                </Text>
+                <Text style={[styles.compactStatusLabel, { color: "#ffffff" }]}>
+                  Warning
+                </Text>
+              </View>
+              <View
+                style={[
+                  styles.compactStatusItem,
+                  { backgroundColor: theme.colors.error },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.compactStatusCount,
+                    { color: theme.colors.onError },
+                  ]}
+                >
+                  {summary.budgetsExceeded}
+                </Text>
+                <Text
+                  style={[
+                    styles.compactStatusLabel,
+                    { color: theme.colors.onError },
+                  ]}
+                >
+                  Exceeded
+                </Text>
+              </View>
+            </View>
+          </View>
         )}
 
         {/* Search and Filters */}
@@ -323,10 +302,15 @@ export default function BudgetsScreen() {
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={[
-              styles.searchbar,
+              styles.compactSearchbar,
               { backgroundColor: theme.colors.surfaceVariant },
             ]}
-            inputStyle={{ color: theme.colors.onSurfaceVariant }}
+            inputStyle={{
+              color: theme.colors.onSurfaceVariant,
+              textAlignVertical: "center",
+              paddingVertical: 0,
+              includeFontPadding: false,
+            }}
           />
 
           <Text
@@ -334,24 +318,36 @@ export default function BudgetsScreen() {
           >
             Filter by Period
           </Text>
-          <SegmentedButtons
-            value={filters.period || "all"}
-            onValueChange={handlePeriodFilter}
-            buttons={periodFilterOptions}
-            style={styles.segmentedButtons}
-          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.horizontalFilter}
+          >
+            <SegmentedButtons
+              value={filters.period || "all"}
+              onValueChange={handlePeriodFilter}
+              buttons={periodFilterOptions}
+              style={styles.horizontalSegmentedButtons}
+            />
+          </ScrollView>
 
           <Text
             style={[styles.filterLabel, { color: theme.colors.onBackground }]}
           >
             Filter by Status
           </Text>
-          <SegmentedButtons
-            value={statusFilter}
-            onValueChange={setStatusFilter}
-            buttons={statusFilterOptions}
-            style={styles.segmentedButtons}
-          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.horizontalFilter}
+          >
+            <SegmentedButtons
+              value={statusFilter}
+              onValueChange={setStatusFilter}
+              buttons={statusFilterOptions}
+              style={styles.horizontalSegmentedButtons}
+            />
+          </ScrollView>
 
           {(filters.period || statusFilter !== "all") && (
             <Button
@@ -361,6 +357,7 @@ export default function BudgetsScreen() {
                 setStatusFilter("all");
               }}
               style={styles.clearFiltersButton}
+              compact
             >
               Clear Filters
             </Button>
@@ -458,89 +455,90 @@ const styles = StyleSheet.create({
   innerContainer: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+  // Compact Summary Styles
+  compactSummary: {
     paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-  },
-  summaryCard: {
-    marginHorizontal: 16,
-    marginBottom: 16,
-    borderRadius: 12,
+    paddingTop: 16,
+    paddingBottom: 12,
+    marginBottom: 8,
   },
   summaryTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 16,
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  summaryItem: {
-    alignItems: "center",
-  },
-  summaryValue: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  summaryLabel: {
-    fontSize: 12,
-    marginTop: 4,
-  },
-  statusRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 8,
-  },
-  statusItem: {
-    flex: 1,
-    alignItems: "center",
-    paddingVertical: 8,
-    borderRadius: 8,
-  },
-  statusCount: {
     fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  compactRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  compactItem: {
+    alignItems: "center",
+    flex: 1,
+  },
+  compactValue: {
+    fontSize: 18,
     fontWeight: "bold",
   },
-  statusLabel: {
-    fontSize: 11,
+  compactLabel: {
+    fontSize: 10,
     marginTop: 2,
   },
+  compactStatusRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 6,
+  },
+  compactStatusItem: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 6,
+    paddingHorizontal: 4,
+    borderRadius: 6,
+  },
+  compactStatusCount: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  compactStatusLabel: {
+    fontSize: 9,
+    marginTop: 1,
+  },
+  // Filters Styles
   filtersSection: {
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginBottom: 12,
   },
-  searchbar: {
-    marginBottom: 16,
+  compactSearchbar: {
+    marginBottom: 12,
     borderRadius: 8,
+    height: 48,
   },
   filterLabel: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "500",
-    marginBottom: 8,
-    marginTop: 8,
+    marginBottom: 6,
+    marginTop: 4,
   },
-  segmentedButtons: {
+  horizontalFilter: {
     marginBottom: 8,
+  },
+  horizontalSegmentedButtons: {
+    marginBottom: 4,
+    minWidth: 350,
   },
   clearFiltersButton: {
-    marginTop: 8,
+    marginTop: 4,
     alignSelf: "flex-start",
   },
   budgetList: {
     flex: 1,
+    marginTop: 4,
   },
   budgetListContent: {
     paddingHorizontal: 16,
-    paddingBottom: 100, // Space for FAB
+    paddingBottom: 80, // Reduced space for FAB
+    paddingTop: 4,
   },
   emptyCard: {
     marginTop: 40,

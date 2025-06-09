@@ -1,13 +1,7 @@
 import { format, subMonths } from "date-fns";
 import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  Appbar,
-  Card,
-  SegmentedButtons,
-  Text,
-  useTheme,
-} from "react-native-paper";
+import { Card, SegmentedButtons, Text, useTheme } from "react-native-paper";
 import { LineChart, PieChart } from "../../components/charts";
 import { useBudgetStore } from "../../stores/budgetStore";
 import { useCategoryStore } from "../../stores/categoryStore";
@@ -212,11 +206,6 @@ export default function AnalyticsScreen() {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       showsVerticalScrollIndicator={false}
     >
-      <Appbar.Header>
-        <Appbar.Content title="Analytics" />
-        <Appbar.Action icon="refresh" onPress={loadData} />
-      </Appbar.Header>
-
       {/* Time Period Selector */}
       <Card style={styles.periodCard}>
         <Card.Content>
@@ -301,7 +290,7 @@ export default function AnalyticsScreen() {
           key={`pie-${selectedPeriod}`}
           data={spendingByCategory}
           title="Spending by Category"
-          height={300}
+          height={280}
         />
       )}
 
@@ -379,7 +368,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   periodCard: {
-    margin: 16,
+    marginTop: 40,
+    marginHorizontal: 16,
+    marginBottom: 16,
     elevation: 2,
   },
   statsCard: {

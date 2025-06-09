@@ -44,7 +44,7 @@ export default function PieChart({
   colorScheme = defaultColors,
 }: PieChartProps) {
   const theme = useTheme();
-  const chartWidth = width || screenWidth - 32;
+  const chartWidth = width || screenWidth - 64;
 
   if (!data || data.length === 0) {
     return (
@@ -77,7 +77,7 @@ export default function PieChart({
     population: item.y,
     color: colorScheme[index % colorScheme.length],
     legendFontColor: theme.colors.onSurface,
-    legendFontSize: 12,
+    legendFontSize: 11,
   }));
 
   const chartConfig = {
@@ -110,8 +110,8 @@ export default function PieChart({
             chartConfig={chartConfig}
             accessor="population"
             backgroundColor="transparent"
-            paddingLeft="15"
-            center={[10, 0]}
+            paddingLeft="30"
+            center={[0, 0]}
             absolute={false}
           />
         </View>
@@ -122,7 +122,8 @@ export default function PieChart({
 
 const styles = StyleSheet.create({
   container: {
-    margin: 8,
+    marginHorizontal: 16,
+    marginVertical: 8,
     elevation: 2,
   },
   title: {
