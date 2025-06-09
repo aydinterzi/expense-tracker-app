@@ -4,6 +4,7 @@ import { Alert, StyleSheet, View } from "react-native";
 import { ActivityIndicator, Text, useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BudgetForm } from "../../../components/forms/BudgetForm";
+import { SuccessModal } from "../../../components/ui/SuccessModal";
 import {
   BudgetWithDetails,
   CreateBudgetData,
@@ -23,6 +24,7 @@ export default function EditBudgetScreen() {
 
   const [budget, setBudget] = useState<BudgetWithDetails | null>(null);
   const [loadingBudget, setLoadingBudget] = useState(true);
+  const [successVisible, setSuccessVisible] = useState(false);
 
   useEffect(() => {
     loadBudget();
@@ -44,15 +46,15 @@ export default function EditBudgetScreen() {
   const handleSubmit = async (data: CreateBudgetData) => {
     try {
       await editBudget(budgetId, data);
-      Alert.alert("Success", "Budget updated successfully!", [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
+      setSuccessVisible(true);
     } catch (error) {
       Alert.alert("Error", "Failed to update budget. Please try again.");
     }
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessVisible(false);
+    router.back();
   };
 
   const handleCancel = () => {
@@ -151,6 +153,12 @@ export default function EditBudgetScreen() {
           onCancel={handleCancel}
           initialData={budget}
           loading={loading}
+        />
+        <SuccessModal
+          visible={successVisible}
+          onClose={handleSuccessClose}
+          title="Budget Updated Successfully!"
+          message="Your budget changes have been saved successfully!"
         />
       </SafeAreaView>
     </>

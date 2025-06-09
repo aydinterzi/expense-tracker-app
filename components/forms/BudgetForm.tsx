@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { format } from "date-fns";
 import React, { useEffect, useState } from "react";
@@ -284,7 +285,11 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
                               { backgroundColor: category.color },
                             ]}
                           >
-                            <Text style={styles.iconText}>{category.icon}</Text>
+                            <Ionicons
+                              name={getCategoryIcon(category) as any}
+                              size={24}
+                              color="#fff"
+                            />
                           </View>
                           <Text
                             style={[
@@ -338,7 +343,11 @@ export const BudgetForm: React.FC<BudgetFormProps> = ({
                               { backgroundColor: account.color },
                             ]}
                           >
-                            <Text style={styles.iconText}>{account.icon}</Text>
+                            <Ionicons
+                              name={getAccountIcon(account) as any}
+                              size={24}
+                              color="#fff"
+                            />
                           </View>
                           <View>
                             <Text

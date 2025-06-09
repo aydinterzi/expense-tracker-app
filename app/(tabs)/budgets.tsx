@@ -1,3 +1,4 @@
+import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
@@ -14,6 +15,7 @@ import {
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BudgetCard } from "../../components/budget/BudgetCard";
+import { SuccessModal } from "../../components/ui/SuccessModal";
 import { useAccountStore } from "../../stores/accountStore";
 import { useBudgetStore } from "../../stores/budgetStore";
 import { useCategoryStore } from "../../stores/categoryStore";
@@ -44,10 +46,18 @@ export default function BudgetsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [snackbarVisible, setSnackbarVisible] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [successVisible, setSuccessVisible] = useState(false);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Auto-refresh when tab is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      loadData();
+    }, [])
+  );
 
   useEffect(() => {
     if (error) {
@@ -86,12 +96,15 @@ export default function BudgetsScreen() {
   const handleDeleteBudget = async (budgetId: number) => {
     try {
       await removeBudget(budgetId);
-      setSnackbarMessage("Budget deleted successfully");
-      setSnackbarVisible(true);
+      setSuccessVisible(true);
     } catch (error) {
       setSnackbarMessage("Failed to delete budget");
       setSnackbarVisible(true);
     }
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessVisible(false);
   };
 
   const handleEditBudget = (budgetId: number) => {
@@ -425,6 +438,13 @@ export default function BudgetsScreen() {
         >
           {snackbarMessage}
         </Snackbar>
+
+        <SuccessModal
+          visible={successVisible}
+          onClose={handleSuccessClose}
+          title="Budget Deleted Successfully!"
+          message="The budget has been deleted successfully!"
+        />
       </View>
     </SafeAreaView>
   );

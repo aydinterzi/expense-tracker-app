@@ -1,6 +1,6 @@
 import { format, parseISO } from "date-fns";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import {
   Card,
   IconButton,
@@ -83,6 +83,21 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
     return format(parseISO(dateString), "MMM dd, yyyy");
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Budget",
+      `Are you sure you want to delete "${budget.name}"? This action cannot be undone.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: onDelete,
+        },
+      ]
+    );
+  };
+
   return (
     <Card
       style={[styles.card, { backgroundColor: theme.colors.surface }]}
@@ -121,7 +136,7 @@ export const BudgetCard: React.FC<BudgetCardProps> = ({
               <IconButton
                 icon="delete"
                 size={20}
-                onPress={onDelete}
+                onPress={handleDelete}
                 iconColor={theme.colors.error}
               />
             )}

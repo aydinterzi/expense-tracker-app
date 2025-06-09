@@ -1,9 +1,10 @@
 import { router, Stack } from "expo-router";
-import React from "react";
-import { Alert, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
 import { useTheme } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BudgetForm } from "../../components/forms/BudgetForm";
+import { SuccessModal } from "../../components/ui/SuccessModal";
 import { CreateBudgetData } from "../../db/services/budgetService";
 import { useAccountStore } from "../../stores/accountStore";
 import { useBudgetStore } from "../../stores/budgetStore";
@@ -14,19 +15,21 @@ export default function AddBudgetScreen() {
   const { addBudget, loading } = useBudgetStore();
   const { categories } = useCategoryStore();
   const { accounts } = useAccountStore();
+  const [successVisible, setSuccessVisible] = useState(false);
 
   const handleSubmit = async (data: CreateBudgetData) => {
     try {
       await addBudget(data);
-      Alert.alert("Success", "Budget created successfully!", [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
+      setSuccessVisible(true);
     } catch (error) {
-      Alert.alert("Error", "Failed to create budget. Please try again.");
+      // You can add error handling here if needed
+      console.error("Failed to create budget:", error);
     }
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessVisible(false);
+    router.back();
   };
 
   const handleCancel = () => {
@@ -59,6 +62,12 @@ export default function AddBudgetScreen() {
           loading={loading}
         />
       </SafeAreaView>
+      <SuccessModal
+        visible={successVisible}
+        onClose={handleSuccessClose}
+        title="Budget Created Successfully!"
+        message="Your budget has been created successfully!"
+      />
     </>
   );
 }
