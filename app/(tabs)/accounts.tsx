@@ -1,23 +1,36 @@
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { FlatList, StyleSheet, View } from "react-native";
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import {
   Card,
   Chip,
   FAB,
+  Menu,
   Paragraph,
   Title,
   useTheme,
 } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Account } from "../../db/schema/accounts";
+import { transactionService } from "../../db/services/transactionService";
 import { useAccountStore } from "../../stores/accountStore";
 
 export default function AccountsScreen() {
   const theme = useTheme();
-  const { accounts, loadAccounts, loading, getTotalBalance } =
+  const { accounts, loadAccounts, loading, getTotalBalance, deleteAccount } =
     useAccountStore();
   const [totalBalance, setTotalBalance] = React.useState(0);
+  const [menuVisible, setMenuVisible] = React.useState(false);
+  const [selectedAccount, setSelectedAccount] = React.useState<Account | null>(
+    null
+  );
 
   useEffect(() => {
     loadAccounts();
@@ -61,10 +74,58 @@ export default function AccountsScreen() {
     }
   };
 
+  const handleDeleteAccount = async (account: Account) => {
+    try {
+      // Check if account has transactions
+      const accountTransactions =
+        await transactionService.getTransactionsByFilters({
+          accountId: account.id,
+        });
+
+      if (accountTransactions.length > 0) {
+        Alert.alert(
+          "Cannot Delete Account",
+          `This account has ${accountTransactions.length} transaction(s). Please delete or move all transactions before deleting the account.`,
+          [{ text: "OK" }]
+        );
+        return;
+      }
+
+      // Show confirmation dialog
+      Alert.alert(
+        "Delete Account",
+        `Are you sure you want to delete "${account.name}"? This action cannot be undone.`,
+        [
+          { text: "Cancel", style: "cancel" },
+          {
+            text: "Delete",
+            style: "destructive",
+            onPress: async () => {
+              await deleteAccount(account.id);
+              setMenuVisible(false);
+              setSelectedAccount(null);
+            },
+          },
+        ]
+      );
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Failed to check account transactions. Please try again."
+      );
+    }
+  };
+
+  const handleLongPress = (account: Account) => {
+    setSelectedAccount(account);
+    setMenuVisible(true);
+  };
+
   const renderAccount = ({ item }: { item: Account }) => (
     <Card
       style={styles.accountCard}
       onPress={() => console.log("Navigate to account details:", item.id)}
+      onLongPress={() => handleLongPress(item)}
     >
       <Card.Content>
         <View style={styles.accountHeader}>
@@ -87,19 +148,47 @@ export default function AccountsScreen() {
             </Chip>
           </View>
           <View style={styles.balanceContainer}>
-            <Title
-              style={[
-                styles.accountBalance,
-                {
-                  color:
-                    (item.currentBalance || 0) >= 0
-                      ? theme.colors.primary
-                      : theme.colors.error,
-                },
-              ]}
-            >
-              ${(item.currentBalance || 0).toFixed(2)}
-            </Title>
+            <View style={styles.balanceRow}>
+              <Title
+                style={[
+                  styles.accountBalance,
+                  {
+                    color:
+                      (item.currentBalance || 0) >= 0
+                        ? theme.colors.primary
+                        : theme.colors.error,
+                  },
+                ]}
+              >
+                ${(item.currentBalance || 0).toFixed(2)}
+              </Title>
+              <Menu
+                visible={menuVisible && selectedAccount?.id === item.id}
+                onDismiss={() => {
+                  setMenuVisible(false);
+                  setSelectedAccount(null);
+                }}
+                anchor={
+                  <TouchableOpacity
+                    onPress={() => handleLongPress(item)}
+                    style={styles.menuButton}
+                  >
+                    <Ionicons
+                      name="ellipsis-vertical"
+                      size={20}
+                      color={theme.colors.onSurfaceVariant}
+                    />
+                  </TouchableOpacity>
+                }
+              >
+                <Menu.Item
+                  onPress={() => handleDeleteAccount(item)}
+                  title="Delete Account"
+                  leadingIcon="trash-can-outline"
+                  titleStyle={{ color: theme.colors.error }}
+                />
+              </Menu>
+            </View>
             <Paragraph style={styles.balanceLabel}>Current Balance</Paragraph>
           </View>
         </View>
@@ -185,7 +274,7 @@ export default function AccountsScreen() {
         <FAB
           icon="plus"
           style={styles.fab}
-          onPress={() => console.log("Navigate to add account")}
+          onPress={() => router.push("/account/add")}
         />
       </View>
     </SafeAreaView>
@@ -311,5 +400,12 @@ const styles = StyleSheet.create({
   totalBalance: {
     fontSize: 28,
     fontWeight: "bold",
+  },
+  balanceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  menuButton: {
+    padding: 8,
   },
 });
