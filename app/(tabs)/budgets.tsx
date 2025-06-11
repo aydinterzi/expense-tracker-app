@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { RefreshControl, ScrollView, StyleSheet, View } from "react-native";
 import {
   Button,
@@ -49,14 +49,19 @@ export default function BudgetsScreen() {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [successVisible, setSuccessVisible] = useState(false);
 
+  // Optimize data loading - only load once on mount
   useEffect(() => {
     loadData();
   }, []);
 
-  // Auto-refresh when tab is focused
+  // Auto-refresh when tab is focused - but debounce it
   useFocusEffect(
     React.useCallback(() => {
-      loadData();
+      const timeoutId = setTimeout(() => {
+        loadData();
+      }, 300); // Small delay to prevent rapid re-renders
+
+      return () => clearTimeout(timeoutId);
     }, [])
   );
 
@@ -116,13 +121,16 @@ export default function BudgetsScreen() {
     router.push(`/budget/details/${budgetId}`);
   };
 
-  // Filter budgets based on search query
-  const filteredBudgets = budgets.filter(
-    (budget) =>
-      budget.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      budget.categoryName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      budget.accountName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Memoize filtered budgets for better performance
+  const filteredBudgets = useMemo(() => {
+    const query = searchQuery.toLowerCase();
+    return budgets.filter(
+      (budget) =>
+        budget.name.toLowerCase().includes(query) ||
+        budget.categoryName?.toLowerCase().includes(query) ||
+        budget.accountName?.toLowerCase().includes(query)
+    );
+  }, [budgets, searchQuery]);
 
   // Filter options
   const periodFilterOptions = [

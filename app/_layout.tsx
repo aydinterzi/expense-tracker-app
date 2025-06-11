@@ -9,6 +9,8 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 import "react-native-reanimated";
+import OnboardingScreen from "../components/onboarding/OnboardingScreen";
+import ErrorBoundary from "../components/ui/ErrorBoundary";
 import { runMigrations } from "../db/client";
 import { seedData } from "../db/migrations/seed";
 import { useSettingsStore } from "../stores/settingsStore";
@@ -17,11 +19,18 @@ import { useSettingsStore } from "../stores/settingsStore";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { isDarkMode } = useSettingsStore();
+  const {
+    isDarkMode,
+    hasSeenOnboarding,
+    setHasSeenOnboarding,
+    setIsFirstLaunch,
+  } = useSettingsStore();
+
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
   const [databaseReady, setDatabaseReady] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   // Initialize budget monitoring and notifications
   const { initializeMonitoring } =
@@ -65,9 +74,19 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded && databaseReady) {
+      // Check if user has seen onboarding
+      if (!hasSeenOnboarding) {
+        setShowOnboarding(true);
+      }
       SplashScreen.hideAsync();
     }
-  }, [loaded, databaseReady]);
+  }, [loaded, databaseReady, hasSeenOnboarding]);
+
+  const handleOnboardingComplete = () => {
+    setHasSeenOnboarding(true);
+    setIsFirstLaunch(false);
+    setShowOnboarding(false);
+  };
 
   // Don't render the app until both fonts and database are ready
   if (!loaded || !databaseReady) {
@@ -79,13 +98,19 @@ export default function RootLayout() {
   const navTheme = isDarkMode ? DarkTheme : DefaultTheme;
 
   return (
-    <PaperProvider theme={paperTheme}>
-      <ThemeProvider value={navTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
-        </Stack>
-      </ThemeProvider>
-    </PaperProvider>
+    <ErrorBoundary>
+      <PaperProvider theme={paperTheme}>
+        <ThemeProvider value={navTheme}>
+          {showOnboarding ? (
+            <OnboardingScreen onComplete={handleOnboardingComplete} />
+          ) : (
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="+not-found" />
+            </Stack>
+          )}
+        </ThemeProvider>
+      </PaperProvider>
+    </ErrorBoundary>
   );
 }

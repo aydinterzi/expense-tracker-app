@@ -1,5 +1,6 @@
+import * as DocumentPicker from "expo-document-picker";
 import React from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import { Alert, ScrollView, StyleSheet } from "react-native";
 import {
   Button,
   Card,
@@ -22,6 +23,13 @@ import {
   FirstDayOfWeek,
   useSettingsStore,
 } from "../../stores/settingsStore";
+import {
+  clearAllData,
+  exportDataToJSON,
+  exportTransactionsToCSV,
+  importDataFromJSON,
+  shareExportedFile,
+} from "../../utils/export";
 
 export default function SettingsScreen() {
   const theme = useTheme();
@@ -34,6 +42,7 @@ export default function SettingsScreen() {
     setCurrency,
     setDateFormat,
     setFirstDayOfWeek,
+    setHasSeenOnboarding,
   } = useSettingsStore();
 
   // Modal states
@@ -54,6 +63,93 @@ export default function SettingsScreen() {
   const handleFirstDaySelect = (selectedDay: FirstDayOfWeek) => {
     setFirstDayOfWeek(selectedDay);
     setShowFirstDayModal(false);
+  };
+
+  // Export/Import handlers
+  const handleExportData = async () => {
+    try {
+      const filePath = await exportDataToJSON();
+      await shareExportedFile(filePath);
+      Alert.alert("Success", "Data exported successfully!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to export data. Please try again.");
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const filePath = await exportTransactionsToCSV();
+      await shareExportedFile(filePath);
+      Alert.alert("Success", "Transactions exported to CSV successfully!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to export CSV. Please try again.");
+    }
+  };
+
+  const handleImportData = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: "application/json",
+        copyToCacheDirectory: false,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        Alert.alert(
+          "Import Data",
+          "This will replace all your current data. Are you sure?",
+          [
+            { text: "Cancel", style: "cancel" },
+            {
+              text: "Import",
+              style: "destructive",
+              onPress: async () => {
+                try {
+                  await importDataFromJSON(result.assets[0].uri);
+                  Alert.alert("Success", "Data imported successfully!");
+                } catch (error) {
+                  Alert.alert(
+                    "Error",
+                    "Failed to import data. Please check the file format."
+                  );
+                }
+              },
+            },
+          ]
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to select file. Please try again.");
+    }
+  };
+
+  const handleClearData = () => {
+    Alert.alert(
+      "Clear All Data",
+      "This will permanently delete all your transactions, budgets, and accounts. This action cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete All",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await clearAllData();
+              Alert.alert("Success", "All data has been cleared.");
+            } catch (error) {
+              Alert.alert("Error", "Failed to clear data. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleShowOnboarding = () => {
+    setHasSeenOnboarding(false);
+    Alert.alert(
+      "Onboarding Reset",
+      "Restart the app to see the onboarding again."
+    );
   };
 
   return (
@@ -115,18 +211,26 @@ export default function SettingsScreen() {
             <Title style={styles.sectionTitle}>Data & Privacy</Title>
             <List.Item
               title="Export Data"
-              description="Export your data to CSV"
+              description="Backup all your data"
               left={(props) => <List.Icon {...props} icon="download" />}
               right={(props) => <List.Icon {...props} icon="chevron-right" />}
-              onPress={() => {}}
+              onPress={handleExportData}
+            />
+            <Divider />
+            <List.Item
+              title="Export CSV"
+              description="Export transactions to CSV"
+              left={(props) => <List.Icon {...props} icon="file-delimited" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={handleExportCSV}
             />
             <Divider />
             <List.Item
               title="Import Data"
-              description="Import data from CSV"
+              description="Restore from backup"
               left={(props) => <List.Icon {...props} icon="upload" />}
               right={(props) => <List.Icon {...props} icon="chevron-right" />}
-              onPress={() => {}}
+              onPress={handleImportData}
             />
             <Divider />
             <List.Item
@@ -134,14 +238,22 @@ export default function SettingsScreen() {
               description="Delete all transactions and accounts"
               left={(props) => <List.Icon {...props} icon="delete" />}
               right={(props) => <List.Icon {...props} icon="chevron-right" />}
-              onPress={() => {}}
+              onPress={handleClearData}
             />
           </Card.Content>
         </Card>
 
         <Card style={styles.sectionCard}>
           <Card.Content>
-            <Title style={styles.sectionTitle}>About</Title>
+            <Title style={styles.sectionTitle}>Help & Support</Title>
+            <List.Item
+              title="Show Onboarding"
+              description="View the app introduction again"
+              left={(props) => <List.Icon {...props} icon="help-circle" />}
+              right={(props) => <List.Icon {...props} icon="chevron-right" />}
+              onPress={handleShowOnboarding}
+            />
+            <Divider />
             <List.Item
               title="Version"
               description="1.0.0"

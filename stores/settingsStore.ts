@@ -58,11 +58,17 @@ interface SettingsState {
   // First Day of Week
   firstDayOfWeek: FirstDayOfWeek;
 
+  // Onboarding & First Launch
+  hasSeenOnboarding: boolean;
+  isFirstLaunch: boolean;
+
   // Actions
   setDarkMode: (isDark: boolean) => void;
   setCurrency: (currency: Currency) => void;
   setDateFormat: (format: DateFormat) => void;
   setFirstDayOfWeek: (day: FirstDayOfWeek) => void;
+  setHasSeenOnboarding: (seen: boolean) => void;
+  setIsFirstLaunch: (isFirst: boolean) => void;
 
   // Utility functions
   formatCurrency: (amount: number) => string;
@@ -77,6 +83,8 @@ export const useSettingsStore = create<SettingsState>()(
       currency: CURRENCIES[0], // USD
       dateFormat: DATE_FORMATS[0], // MM/DD/YYYY
       firstDayOfWeek: FIRST_DAY_OPTIONS[0], // Sunday
+      hasSeenOnboarding: false,
+      isFirstLaunch: true,
 
       // Actions
       setDarkMode: (isDark: boolean) => {
@@ -93,6 +101,14 @@ export const useSettingsStore = create<SettingsState>()(
 
       setFirstDayOfWeek: (day: FirstDayOfWeek) => {
         set({ firstDayOfWeek: day });
+      },
+
+      setHasSeenOnboarding: (seen: boolean) => {
+        set({ hasSeenOnboarding: seen });
+      },
+
+      setIsFirstLaunch: (isFirst: boolean) => {
+        set({ isFirstLaunch: isFirst });
       },
 
       // Utility functions
