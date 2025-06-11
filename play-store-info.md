@@ -1,16 +1,16 @@
-# SpendTrack - Play Store Information
+# Valance - Play Store Information
 
 ## App Name
 
-SpendTrack: Expense Tracker
+Valance: Personal Finance Manager
 
 ## Short Description (80 chars max)
 
-Track expenses, manage budgets, control your spending effortlessly
+Track expenses, manage budgets, achieve financial balance effortlessly
 
 ## Long Description
 
-Take control of your finances with SpendTrack, a simple and powerful expense tracking app.
+Take control of your finances with Valance, a comprehensive personal finance management app.
 
 **Key Features:**
 • Quick expense entry
@@ -26,7 +26,7 @@ Take control of your finances with SpendTrack, a simple and powerful expense tra
 • Expense tracking
 • Financial goal setting
 
-Download now and start managing your money better!
+Download Valance now and achieve perfect financial balance!
 
 ## Keywords
 

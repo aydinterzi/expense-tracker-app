@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "SpendTrack",
-    "slug": "spendtrack-expense-tracker",
+    "name": "Valance: Personal Finance Manager",
+    "slug": "valance-expense-budget",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "platforms": ["android"],
-    "scheme": "spendtrack",
+    "scheme": "valance",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -19,7 +19,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.yourcompany.spendtrack",
+      "package": "com.henkinen.valance",
       "versionCode": 1
     },
     "web": {
