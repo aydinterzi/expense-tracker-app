@@ -1,29 +1,29 @@
 {
   "expo": {
-    "name": "Valance: Personal Finance Manager",
+    "name": "Valance: Finance Manager",
     "slug": "valance-expense-budget",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/images/valance_icon.png",
     "userInterfaceStyle": "automatic",
     "platforms": ["android"],
     "scheme": "valance",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/images/valance_icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/valance_icon.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.henkinen.valance",
       "versionCode": 1
     },
     "web": {
-      "favicon": "./assets/favicon.png",
+      "favicon": "./assets/images/valance_icon.png",
       "bundler": "metro"
     },
     "plugins": ["expo-router"],
